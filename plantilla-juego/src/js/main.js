@@ -23,6 +23,7 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
+    this.game.load.image('green', 'images/green.png');
   },
 
   create: function () {
@@ -37,6 +38,7 @@ window.onload = function () {
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
-  
+  //game.state.add('game', PlayGame);
+
   game.state.start('boot');
 };

@@ -1,8 +1,6 @@
 'use strict';
 var sprite;
-var IniciaJuego = {
-
-
+var PlayGame = {
   create: function () {
    game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -20,12 +18,13 @@ var IniciaJuego = {
 
   update: function () {
   	
-	sprite.rotation = game.physics.arcade.moveToPointer(sprite, 60, game.input.activePointer, 500);
+	   sprite.rotation = game.physics.arcade.moveToPointer(sprite, 60, game.input.activePointer, 500);
   },
 
   render: function() {
 
     game.debug.spriteInfo(sprite, 32, 32);
 
-}
+  }
 };
+module.exports = PlayGame;

@@ -1,6 +1,6 @@
-# DR. Mariano
+# Doctor Mariano
 
-DR. Mariano by
+Doctor Mariano by
 [DanielAlvarezCatro](https://github.com/DanielAlvarezCatro).
 
 Initial scaffolding generated with [generator-gamejam](https://github.com/belen-albeza/generator-gamejam/).
