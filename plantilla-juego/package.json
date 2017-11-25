@@ -1,12 +1,12 @@
 {
   "version": "0.0.0",
-  "name": "doctor-mariano",
+  "name": "drmariano",
   "version": "0.0.0",
   "author": "",
   "license": "MIT",
   
-  "repository": "DanielAlvarezCatro/plantilla-juego",
-  "author": "DanielAlvarezCatro",
+  "repository": "Aramissss/PVLICirujanosDe5",
+  "author": "Aramissss",
   
   "dependencies": {
     "browserify": "*",

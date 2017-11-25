@@ -1,6 +1,7 @@
 'use strict';
 
-var PlayScene = require('./play_scene.js');
+var GameScene = require('./play_game.js');
+var MenuScene = require('./menu.js');
 
 
 var BootScene = {
@@ -22,12 +23,12 @@ var PreloaderScene = {
     this.load.setPreloadSprite(this.loadingBar);
 
     // TODO: load here the assets for the game
-    this.game.load.image('logo', 'images/phaser.png');
+    this.load.image('menuButton','images/menuButton.png');
     this.game.load.image('green', 'images/green.png');
   },
 
   create: function () {
-    this.game.state.start('play');
+    this.game.state.start('menu');
   }
 };
 
@@ -37,8 +38,8 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
-  game.state.add('play', PlayScene);
-  //game.state.add('game', PlayGame);
+  game.state.add('playGame', GameScene);
+  game.state.add('menu', MenuScene)
 
   game.state.start('boot');
 };

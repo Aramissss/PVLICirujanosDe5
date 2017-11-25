@@ -1,7 +1,7 @@
-# Doctor Mariano
+# DrMariano
 
-Doctor Mariano by
-[DanielAlvarezCatro](https://github.com/DanielAlvarezCatro).
+DrMariano by
+[Aramissss](https://github.com/Aramissss).
 
 Initial scaffolding generated with [generator-gamejam](https://github.com/belen-albeza/generator-gamejam/).
 
@@ -22,8 +22,8 @@ npm install -g gulp
 Clone this repository and install dependencies:
 
 ```
-git clone DanielAlvarezCatro/plantilla-juego
-cd plantilla-juego
+git clone Aramissss/PVLICirujanosDe5
+cd PVLICirujanosDe5
 npm install
 ```
 
