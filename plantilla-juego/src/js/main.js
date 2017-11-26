@@ -24,7 +24,8 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.load.image('menuButton','images/menuButton.png');
-    this.game.load.image('green', 'images/green.png');
+    this.load.image('green', 'images/green.png');
+    this.load.image('glass', 'images/glass.png');
   },
 
   create: function () {
