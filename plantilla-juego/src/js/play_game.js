@@ -8,7 +8,7 @@ var currentPill;
 var glass;
 
 
-//0=vacío 1=azul 2=amarillo 3=rojo
+//'none' 'blue' 'yellow' 'red'
 var cells = [];//Array que contiene las casillas
 var fallDelay=500;
 var timer, fallLoop, moveLoop;
@@ -37,10 +37,10 @@ GameScene.create = function(){
     for(var i=0; i<16;i++){//Crea array vacío
       cells[i]=[];
       for(var j=0; j<8;j++){
-        cells[i][j]=0;
+        cells[i][j]='none';
       }
     }
-    currentPill = new Pill(this.game, 3,0, 'red');//Crea píldota nueva
+    currentPill = new Pill(this.game, 3,0, 'red','yellow');//Crea píldota nueva
     currentPill.scale.setTo(2,2);
     currentPill.anchor.setTo(0,0);
     this.game.add.existing(currentPill);//La añade al game
@@ -55,8 +55,13 @@ GameScene.update = function() {
     currentPill.move(keyInput);
   }
 
-
-
+//Método que devuelve un booleano dependiendo de si la celda contiene algún color
+function availableCell(x,y){
+    if(cells[y][x]=='none'){
+      return true;
+    }
+    else return false;
+  }
 
 
 function inputManager(){
