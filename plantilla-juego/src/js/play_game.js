@@ -1,9 +1,11 @@
 'use strict';
-/*var item = require('./item.js');
+var item = require('./item.js');
 var Item = item.Item;
 var Pill = item.Pill;
-*/
+
 var cursors;
+var ZKey;
+var XKey;
 var currentPill;
 var glass;
 var game;
@@ -11,7 +13,10 @@ var game;
 //'none' 'blue' 'yellow' 'red'
 var cells = [];//Array que contiene las casillas
 var cellsSprites = [];//Array que contiene los sprites de las casillas
-var fallDelay=500;
+var lowSpeed=500;
+var mediumSpeed=400;
+var highSpeed=250;
+var fallDelay;
 var timer, fallLoop, moveLoop;
 var inputStartTime;
 var moveDelay=fallDelay/4;
@@ -19,6 +24,7 @@ var keyInput='';
 var cellWidth, cellHeight;
 var movable;
 var colors = ['blue', 'yellow', 'red'];
+var rotDir=0;//0=null 1=clockwise -1=anticlockwise
 
 var GameScene = {};
 GameScene.preload = function(){//Carga los sprites
@@ -29,11 +35,14 @@ GameScene.preload = function(){//Carga los sprites
 }
 GameScene.create = function(){
     //Añade el sprite de fondo
+    fallDelay=highSpeed;
     glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
     game=this.game;
     glass.scale.setTo(2,2);
     glass.x =this.game.world.centerX-glass.width/2;
     glass.y =this.game.world.centerY-glass.height/2;
+    ZKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
+    XKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
     cellWidth=16;//Medidas de las celdas
     cellHeight=16;
@@ -52,7 +61,7 @@ GameScene.create = function(){
     }
 
     currentPill = new Pill(this.game, 3,0, 'red','yellow');//Crea píldota nueva
-    currentPill.startPill(3,0,'red','yellow');
+    currentPill.startPill(3,1,'red','yellow');
     currentPill.scale.setTo(2,2);
     currentPill.anchor.setTo(0,0);
     this.game.add.existing(currentPill);//La añade al game
@@ -65,6 +74,7 @@ GameScene.create = function(){
 GameScene.update = function() {
     inputManager();
     currentPill.move(keyInput);
+
     paintMap();
   }
 
@@ -94,14 +104,26 @@ function inputManager(){
     else{
       keyInput='';
     }
+    if(XKey.isDown && XKey.duration<1) {//Clockwise
+      rotDir=1;
+      currentPill.rotate(rotDir);
+    }
+    else if(ZKey.isDown && ZKey.duration<1){//Anticlockwise
+      rotDir=-1;
+      currentPill.rotate(rotDir);
+    }
+    else {
+      rotDir=0;
+    }
+
     if(cursors.down.isDown){//Cuando se pulsa hacia abajo el delay es menor
-       fallLoop.delay=200;
+       fallLoop.delay=100;
     }
     else{
-       fallLoop.delay=500;
+       fallLoop.delay=fallDelay;
     }
   }
-
+/*
 
   //Contiene Item, Pills y Virus
   function Item(game,x,y,color){
@@ -182,7 +204,7 @@ function inputManager(){
 
         }
         else {
-          
+
         }
     }
     Pill.prototype.fall = function(){//Función de caída que se repite en bucle
@@ -199,16 +221,16 @@ function inputManager(){
                 this.attachedPill.cellPosition[1]--;
                 changePill();
         }
-      }
+      }*/
       //Método que devuelve un booleano dependiendo de si la celda contiene algún color
-      function availableCell(x,y){
+    global.availableCell = function(x,y){
           if(cells[y][x]=='none'){
             return true;
           }
           else return false;
         }
 
-    function changePill(){
+    global.changePill =function(){
       var auxY = currentPill.cellPosition[0];
       var auxX = currentPill.cellPosition[1];
       cells[auxX][auxY] = currentPill.color;
@@ -218,7 +240,7 @@ function inputManager(){
       cells[auxX][auxY] = currentPill.attachedPill.color;//Marca el color de las píldoras en la celda correspondiente
       //var rnd = game.rnd.integerInRange(0, 2);
       //console.log(rnd);
-      currentPill.startPill(3,0,colors[game.rnd.integerInRange(0, 2)],colors[game.rnd.integerInRange(0, 2)]);
+      currentPill.startPill(3,1,colors[game.rnd.integerInRange(0, 2)],colors[game.rnd.integerInRange(0, 2)]);
     }
     function paintMap(){
       for(var i=0; i<17;i++){
@@ -241,5 +263,6 @@ function inputManager(){
         }
       }
     }
+
 
 module.exports = GameScene;
