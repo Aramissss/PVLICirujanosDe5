@@ -87,27 +87,32 @@ function Item(game,x,y,color){
     else if(this.rotationState<0){
       this.rotationState=3;
     }
-    if(this.canRotate(this.clockRotOffset, this.attachedPill.clockRotOffset)){
-
+    //Si está en el límite derecho del mapa y no hay celdas a la izquierda la píldora se movera para facilitar la rotación
+    if(!availableCell(this.cellPosition[0]+1, this.cellPosition[1]) && !availableCell(this.attachedPill.cellPosition[0]+1, this.cellPosition[1])){
+      if(availableCell(this.cellPosition[0]-1, this.cellPosition[1]) && availableCell(this.attachedPill.cellPosition[0]-1, this.cellPosition[1])){
+        if(this.canRotate(this.cellPosition[0]-1,this.cellPosition[1],this.attachedPill.cellPosition[0]-1 ,this.attachedPill.cellPosition[1],this.clockRotOffset, this.attachedPill.clockRotOffset, rotDir)){
+          this.cellPosition[0]--;
+          this.attachedPill.cellPosition[0]--;
+        }
+      }
     }
-    if(rotDir>0 && this.canRotate(this.clockRotOffset, this.attachedPill.clockRotOffset)){//Clockwise offset
+    //Comprueba que puede rotar hacia la derecha
+    if(rotDir>0 && this.canRotate(this.cellPosition[0],this.cellPosition[1],this.attachedPill.cellPosition[0] ,this.attachedPill.cellPosition[1],this.clockRotOffset, this.attachedPill.clockRotOffset, rotDir)){//Clockwise offset
+
       this.cellPosition[0]+=this.clockRotOffset[this.rotationState][0];
       this.cellPosition[1]+=this.clockRotOffset[this.rotationState][1];
       this.attachedPill.cellPosition[0]+=this.attachedPill.clockRotOffset[this.rotationState][0];
       this.attachedPill.cellPosition[1]+=this.attachedPill.clockRotOffset[this.rotationState][1];
     }
-    else if(this.canRotate(this.aclockRotOffset, this.attachedPill.aclockRotOffset)) {//Anticlockwise offset
+    //Comprueba que puede rotar hacia la izquierda
+    else if(rotDir<0 && this.canRotate(this.cellPosition[0],this.cellPosition[1],this.attachedPill.cellPosition[0] ,this.attachedPill.cellPosition[1] ,this.aclockRotOffset, this.attachedPill.aclockRotOffset,rotDir)) {//Anticlockwise offset
       this.cellPosition[0]+=this.aclockRotOffset[this.rotationState][0];
       this.cellPosition[1]+=this.aclockRotOffset[this.rotationState][1];
       this.attachedPill.cellPosition[0]+=this.attachedPill.aclockRotOffset[this.rotationState][0];
       this.attachedPill.cellPosition[1]+=this.attachedPill.aclockRotOffset[this.rotationState][1];
     }
   }
-  Pill.prototype.canRotate = function (rotOffset1, rotOffset2){
-    var auxX1 = this.cellPosition[0];
-    var auxY1 = this.cellPosition[1];
-    var auxX2 = this.attachedPill.cellPosition[0];
-    var auxY2= this.attachedPill.cellPosition[1];
+  Pill.prototype.canRotate = function (auxX1,auxY1,auxX2,auxY2,rotOffset1, rotOffset2, rotDir){
     auxX1 +=rotOffset1[this.rotationState][0];
     auxY1 +=rotOffset1[this.rotationState][1];
     auxX2 +=rotOffset2[this.rotationState][0];
@@ -115,7 +120,14 @@ function Item(game,x,y,color){
     if(availableCell(auxX1,auxY1) && availableCell(auxX2, auxY2)){
       return true;
     }
-    else return false;
+    else {
+      if(rotDir>0){
+      this.rotationState--;
+      }
+    else this.rotationState++;
+    return false;
+    }
+
   }
 
   Pill.prototype.switchPillSides = function(){//Intercambia las posiciones de los dos lados de la píldora

@@ -35,7 +35,7 @@ GameScene.preload = function(){//Carga los sprites
 }
 GameScene.create = function(){
     //Añade el sprite de fondo
-    fallDelay=highSpeed;
+    fallDelay=lowSpeed;
     glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
     game=this.game;
     glass.scale.setTo(2,2);
@@ -123,105 +123,6 @@ function inputManager(){
        fallLoop.delay=fallDelay;
     }
   }
-/*
-
-  //Contiene Item, Pills y Virus
-  function Item(game,x,y,color){
-      Phaser.Sprite.call(this, game, x, y, color);//Se le asigna un sprite
-      this.xOffset=336;//la diferencia que hay entre el punto 0 y la posición en pantalla del frasco
-      this.yOffset=180;
-      this.color=color;
-      this.cellPosition = [0,0];
-      this.cellPosition[0]=x;
-      this.cellPosition[1]=y;
-      game.add.existing(this);
-    };
-    Item.prototype = Object.create(Phaser.Sprite.prototype);//Asignación de constructora
-    Item.prototype.constructor = Item;
-
-
-    function Pill(game,x,y,color1, color2){//Píldoras, heredan de Item
-      var self=this;
-      Item.call(self, game, x, y, color1)
-      this.startPill = function(x,y,color1,color2){
-        self.cellPosition[0]=x;
-        self.cellPosition[1]=y;
-        self.loadTexture(color1);//Cambia el sprite
-        self.color = color1;
-        self.attachedPill = {
-          color: color2,//'blue' 'red' 'yellow' 'none'
-          cellPosition : [self.cellPosition[0]+1,self.cellPosition[1]],//La píldora adherida aparece a la derecha
-          sprite: game.add.sprite(game.world.centerX,game.world.centerY, color2),
-        }
-        self.attachedPill.sprite.scale.setTo(2,2);
-        self.attachedPill.sprite.anchor.setTo(0,0);
-      }
-      self.game.add.existing(this);
-    };
-    Pill.prototype = Object.create(Item.prototype);//Asignación de constructora
-    Pill.prototype.constructor = Pill;
-
-    Pill.prototype.update=function(){//Se hace un update a la posición en la que aparece en pantalla
-      this.x=16*this.cellPosition[0]+this.xOffset;
-      this.y=16*this.cellPosition[1]+this.yOffset;
-      this.attachedPill.sprite.x=16*this.attachedPill.cellPosition[0]+this.xOffset;
-      this.attachedPill.sprite.y=16*this.attachedPill.cellPosition[1]+this.yOffset;
-
-
-    };
-    Pill.prototype.move = function(keyInput){//Recibe una tecla del inputManager y mueve su posición
-        if(keyInput=='r'){//Derecha
-          this.cellPosition[0]++;
-          this.attachedPill.cellPosition[0]++;
-          if(this.cellPosition[0]>=8 || this.attachedPill.cellPosition[0]>=8){//Recoloca las píldoras dependiendo de quién esté a la derecha
-            this.cellPosition[0]--;
-            this.attachedPill.cellPosition[0]--;
-          }
-          else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la derecha
-            || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
-            this.cellPosition[0]--;
-            this.attachedPill.cellPosition[0]--;
-
-          }
-        }
-        else if(keyInput=='l'){//Izquierda
-          this.cellPosition[0]--;
-          this.attachedPill.cellPosition[0]--;
-          if(this.cellPosition[0]<0 || this.attachedPill.cellPosition[0]<0){//Recoloca las píldoras dependiendo de quién esté a la izquierda
-              this.cellPosition[0]++;
-              this.attachedPill.cellPosition[0]++;
-          }
-          else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la izquierda
-            || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
-              this.cellPosition[0]++;
-              this.attachedPill.cellPosition[0]++;
-
-          }
-        }
-      }
-    Pill.prototype.rotate = function(dir){
-        if(dir=='right'){
-
-        }
-        else {
-
-        }
-    }
-    Pill.prototype.fall = function(){//Función de caída que se repite en bucle
-        this.cellPosition[1]++;
-        this.attachedPill.cellPosition[1]++;
-        if(this.cellPosition[1]>=17 || this.attachedPill.cellPosition[1]>=17){//Comprueba que no llegue al final del mapa
-                this.cellPosition[1]--;
-                this.attachedPill.cellPosition[1]--;
-                changePill();
-        }
-        else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada debajo
-          || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
-                this.cellPosition[1]--;
-                this.attachedPill.cellPosition[1]--;
-                changePill();
-        }
-      }*/
       //Método que devuelve un booleano dependiendo de si la celda contiene algún color
     global.availableCell = function(x,y){
           if(cells[y][x]=='none'){
@@ -238,8 +139,7 @@ function inputManager(){
       auxY = currentPill.attachedPill.cellPosition[0];
       auxX = currentPill.attachedPill.cellPosition[1];
       cells[auxX][auxY] = currentPill.attachedPill.color;//Marca el color de las píldoras en la celda correspondiente
-      //var rnd = game.rnd.integerInRange(0, 2);
-      //console.log(rnd);
+
       currentPill.startPill(3,1,colors[game.rnd.integerInRange(0, 2)],colors[game.rnd.integerInRange(0, 2)]);
     }
     function paintMap(){
