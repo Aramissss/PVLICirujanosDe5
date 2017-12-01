@@ -174,7 +174,7 @@ var BootScene = {
     this.game.load.baseURL = 'https://aramissss.github.io/PVLICirujanosDe5/plantilla-juego/src/';
     this.game.load.crossOrigin = 'anonymous';
     this.game.load.image('preloader_bar', 'images/preloader_bar.png');
-    this.game.load.image('menuButton','images/menuButton.png');
+
   },
 
   create: function () {
@@ -208,12 +208,19 @@ window.onload = function () {
   game.state.add('menu', MenuScene)
 
   game.state.start('boot');
+
 };
 
 },{"./menu.js":3,"./play_game.js":4}],3:[function(require,module,exports){
 'use strict'
 var Button;
 var MenuScene = {
+    preload: function () {
+      this.game.load.image('menuButton','images/MenuButton.png');
+    // load here assets required for the loading screen
+   
+  },
+
   create: function () {
     Button = this.add.button(this.game.world.centerX-100,
       this.game.world.centerY-100,
