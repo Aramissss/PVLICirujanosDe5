@@ -7,7 +7,10 @@ var MenuScene = require('./menu.js');
 var BootScene = {
   preload: function () {
     // load here assets required for the loading screen
+    this.game.load.baseURL = 'https://aramissss.github.io/PVLICirujanosDe5/plantilla-juego/src/';
+    this.game.load.crossOrigin = 'anonymous';
     this.game.load.image('preloader_bar', 'images/preloader_bar.png');
+    this.game.load.image('menuButton','images/menuButton.png');
   },
 
   create: function () {
