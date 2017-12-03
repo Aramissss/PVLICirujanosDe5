@@ -1,4 +1,6 @@
 'use strict'
+var board;
+var colors = ['blue', 'yellow', 'red'];
 //Contiene Item, Pills y Virus
 function Item(game,x,y,color){
     Phaser.Sprite.call(this, game, x, y, color);//Se le asigna un sprite
@@ -14,8 +16,10 @@ function Item(game,x,y,color){
   Item.prototype.constructor = Item;
 
 
-  function Pill(game,x,y,color1, color2){//Píldoras, heredan de Item
+  function Pill(game,x,y,color1, color2, Board){//Píldoras, heredan de Item
+      board = Board;
       var self=this;
+      this.game = game;
       Item.call(self, game, x, y, color1)
       this.startPill = function(x,y,color1,color2){
           self.rotationState=0;//Hay 4 estados 0=0º 1=270º 2=180º 3=90º
@@ -23,14 +27,14 @@ function Item(game,x,y,color){
           self.aclockRotOffset = [[0,1],[-1,-1],[1,0],[0,0]]
           self.cellPosition[0]=x;
           self.cellPosition[1]=y;
-          self.loadTexture(color1);//Cambia el sprite
+          self.loadTexture(color1 + 'Pill');//Cambia el sprite
           self.color = color1;
           self.attachedPill = {
             color: color2,//'blue' 'red' 'yellow' 'none'
             cellPosition : [self.cellPosition[0]+1,self.cellPosition[1]],//La píldora adherida aparece a la derecha
             clockRotOffset : [[1,1],[-1,0],[0,0],[0,-1]],
             aclockRotOffset : [[1,0],[0,0],[0,1],[-1,-1]],
-            sprite: game.add.sprite(game.world.centerX,game.world.centerY, color2),
+            sprite: game.add.sprite(game.world.centerX,game.world.centerY, color2 + 'Pill'),
           }
           self.attachedPill.sprite.scale.setTo(2,2);
           self.attachedPill.sprite.anchor.setTo(0,0);
@@ -57,8 +61,8 @@ function Item(game,x,y,color){
           this.cellPosition[0]--;
           this.attachedPill.cellPosition[0]--;
         }
-        else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la derecha
-          || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
+        else if(!this.availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la derecha
+          || !this.availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
           this.cellPosition[0]--;
           this.attachedPill.cellPosition[0]--;
 
@@ -71,8 +75,8 @@ function Item(game,x,y,color){
             this.cellPosition[0]++;
             this.attachedPill.cellPosition[0]++;
         }
-        else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la izquierda
-          || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
+        else if(!this.availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada a la izquierda
+          || !this.availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
             this.cellPosition[0]++;
             this.attachedPill.cellPosition[0]++;
 
@@ -88,8 +92,8 @@ function Item(game,x,y,color){
       this.rotationState=3;
     }
     //Si está en el límite derecho del mapa y no hay celdas a la izquierda la píldora se movera para facilitar la rotación
-    if(!availableCell(this.cellPosition[0]+1, this.cellPosition[1]) && !availableCell(this.attachedPill.cellPosition[0]+1, this.cellPosition[1])){
-      if(availableCell(this.cellPosition[0]-1, this.cellPosition[1]) && availableCell(this.attachedPill.cellPosition[0]-1, this.cellPosition[1])){
+    if(!this.availableCell(this.cellPosition[0]+1, this.cellPosition[1]) && !this.availableCell(this.attachedPill.cellPosition[0]+1, this.cellPosition[1])){
+      if(this.availableCell(this.cellPosition[0]-1, this.cellPosition[1]) && this.availableCell(this.attachedPill.cellPosition[0]-1, this.cellPosition[1])){
         if(this.canRotate(this.cellPosition[0]-1,this.cellPosition[1],this.attachedPill.cellPosition[0]-1 ,this.attachedPill.cellPosition[1],this.clockRotOffset, this.attachedPill.clockRotOffset, rotDir)){
           this.cellPosition[0]--;
           this.attachedPill.cellPosition[0]--;
@@ -117,7 +121,7 @@ function Item(game,x,y,color){
     auxY1 +=rotOffset1[this.rotationState][1];
     auxX2 +=rotOffset2[this.rotationState][0];
     auxY2 +=rotOffset2[this.rotationState][1];
-    if(availableCell(auxX1,auxY1) && availableCell(auxX2, auxY2)){
+    if(this.availableCell(auxX1,auxY1) && this.availableCell(auxX2, auxY2)){
       return true;
     }
     else {
@@ -145,16 +149,37 @@ function Item(game,x,y,color){
       if(this.cellPosition[1]>=17 || this.attachedPill.cellPosition[1]>=17){//Comprueba que no llegue al final del mapa
               this.cellPosition[1]--;
               this.attachedPill.cellPosition[1]--;
-              changePill();
+              this.changePill();
       }
-      else if(!availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada debajo
-        || !availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
+      else if(!this.availableCell(this.cellPosition[0], this.cellPosition[1])//Comprueba que no haya una celda ocupada debajo
+        || !this.availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
               this.cellPosition[1]--;
               this.attachedPill.cellPosition[1]--;
-              changePill();
+              this.changePill();
       }
     }
+  Pill.prototype.availableCell = function(x,y){
+          if(x>=8 || y>=17){
+            return false;
+          }
+          else if(board.cells[y][x].color=='none'){
+            return true;
+          }
+          else return false;
+        }
 
+
+  Pill.prototype.changePill =function(){
+      var auxY = this.cellPosition[0];
+      var auxX = this.cellPosition[1];
+      board.cells[auxX][auxY].changeCell(this.color, 'Pill');
+
+      auxY = this.attachedPill.cellPosition[0];
+      auxX = this.attachedPill.cellPosition[1];
+      board.cells[auxX][auxY].changeCell(this.attachedPill.color, 'Pill');//Marca el color de las píldoras en la celda correspondiente
+
+      this.startPill(3,1,colors[this.game.rnd.integerInRange(0, 2)],colors[this.game.rnd.integerInRange(0, 2)]);
+    }
 module.exports = {
   Item : Item,
   Pill : Pill,
