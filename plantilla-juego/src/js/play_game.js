@@ -14,6 +14,8 @@ var board;
 var currentPill;
 var glass;
 var game;
+var level;
+var maxY;//Altura máxima a la que puede aparecer un virus
 
 var lowSpeed=500;
 var mediumSpeed=400;
@@ -34,6 +36,7 @@ GameScene.preload = function(){//Carga los sprites
   this.game.load.image('yellowVirus', 'images/yellowVirus.png');
   this.game.load.image('redVirus', 'images/redVirus.png');
   this.game.load.image('glass', 'images/glass.png');
+  this.game.load.image('blank', 'images/blank.png');
 }
 GameScene.create = function(){
     //Añade el sprite de fondo
@@ -48,7 +51,15 @@ GameScene.create = function(){
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
 
     board = new GameBoard(game);
-    board.createVirus(7);
+    level=3;
+    if(level>=15){
+      maxY=4;
+    }
+    else if(level>=10){
+      maxY=7;
+    }
+    else maxY=10;
+    board.createVirus(level*4+4,maxY);
 
     currentPill = new Pill(this.game, 3,0, 'red','yellow', board);//Crea píldota nueva
     currentPill.startPill(3,1,'red','yellow');
@@ -64,7 +75,9 @@ GameScene.create = function(){
 GameScene.update = function() {
     inputManager();
     currentPill.move(keyInput);
+
   }
+
 
 function inputManager(){
     if(cursors.right.isDown){
@@ -94,11 +107,11 @@ function inputManager(){
     }
     if(XKey.isDown && XKey.duration<1) {//Clockwise
       rotDir=1;
-      currentPill.rotate(rotDir);
+      currentPill.setRotation(rotDir);
     }
     else if(ZKey.isDown && ZKey.duration<1){//Anticlockwise
       rotDir=-1;
-      currentPill.rotate(rotDir);
+      currentPill.setRotation(rotDir);
     }
     else {
       rotDir=0;
