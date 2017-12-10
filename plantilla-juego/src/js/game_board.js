@@ -78,6 +78,7 @@ function gameBoard(Game){
         auxX = destroyablePills[i][0];
         auxY = destroyablePills[i][1];
         this.cells[auxY][auxX].destroyCell();
+
       }
     }
   }
@@ -103,20 +104,19 @@ function cell (game, color, posX, posY){
     this.posY = posY;
     this.color = color;
     this.sprite = game.add.sprite(16*posX+336,16*posY+180, 'blank');
+    this.sprite.scale.setTo(2,2);
+    this.sprite.anchor.setTo(0,0);
     this.changeCell = function(color, kind){//Kind: Virus or Pill
         this.kind = kind;
         this.color = color;
         this.sprite.loadTexture(color + kind);
-        this.sprite.scale.setTo(2,2);
-        this.sprite.anchor.setTo(0,0);
     }
+
     this.destroyCell = function(){
       this.kind='none';
       this.color ='none';
-      this.sprite.destroy();
-      this.sprite = game.add.sprite(16*posX+336,16*posY+180, 'blank');
-      this.sprite.scale.setTo(2,2);
-      this.sprite.anchor.setTo(0,0);
+      this.sprite.loadTexture('blank');
+
     }
 }
 

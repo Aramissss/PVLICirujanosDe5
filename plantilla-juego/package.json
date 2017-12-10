@@ -1,24 +1,23 @@
 {
   "version": "0.0.0",
   "name": "drmariano",
-  "version": "0.0.0",
-  "author": "",
-  "license": "MIT",
-  
-  "repository": "Aramissss/PVLICirujanosDe5",
   "author": "Aramissss",
-  
+  "license": "MIT",
+  "repository": "Aramissss/PVLICirujanosDe5",
   "dependencies": {
-    "browserify": "*",
     "browser-sync": "*",
+    "browserify": "*",
     "del": "*",
+    "generator-gamejam": "^1.2.2",
     "gulp": "*",
     "gulp-connect": "*",
-    "gulp-gh-pages": "*", 
+    "gulp-gh-pages": "*",
     "gulp-util": "*",
+    "jslint": "^0.11.0",
     "merge-stream": "*",
     "phaser": "*",
     "vinyl-source-stream": "*",
-    "watchify": "*"
+    "watchify": "*",
+    "yo": "^2.0.0"
   }
 }

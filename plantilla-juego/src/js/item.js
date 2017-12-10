@@ -16,16 +16,15 @@ function Item(game,x,y,color){
   Item.prototype.constructor = Item;
 
 
-  function Pill(game,x,y,color1, color2, Board){//Píldoras, heredan de Item
+function Pill(game,x,y,color1, color2, Board){//Píldoras, heredan de Item
       board = Board;
       var self=this;
       this.game = game;
-      Item.call(self, game, x, y, color1)
+      Item.call(self, game, x, y, color1);
+      self.scale.setTo(2,2);
+      self.anchor.setTo(0,0);
       this.startPill = function(x,y,color1,color2){
           self.rotationState=0;//Hay 4 estados 0=0º 1=270º 2=180º 3=90º
-          //self.clockRotOffset = [[0,0],[0,-1],[1,1],[-1,0]];//La distancia al centro en celdas respecto a la rotación
-          //self.aclockRotOffset = [[0,1],[-1,-1],[1,0],[0,0]]
-
           self.cellPosition[0]=x;
           self.cellPosition[1]=y;
           self.loadTexture(color1 + 'Pill');//Cambia el sprite
@@ -33,8 +32,7 @@ function Item(game,x,y,color){
           self.attachedPill = {
             color: color2,//'blue' 'red' 'yellow' 'none'
             cellPosition : [self.cellPosition[0]+1,self.cellPosition[1]],//La píldora adherida aparece a la derecha
-            //clockRotOffset : [[1,1],[-1,0],[0,0],[0,-1]],
-            //aclockRotOffset : [[1,0],[0,0],[0,1],[-1,-1]],
+
             rotOffset : [[1,0],[0,1],[-1,0],[0,-1]],//Offset respecto a la píldora principal
             sprite : game.add.sprite(game.world.centerX,game.world.centerY, color2 + 'Pill'),
           }
@@ -137,18 +135,10 @@ function Item(game,x,y,color){
         || !this.availableCell(this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1])){
               this.cellPosition[1]--;
               this.attachedPill.cellPosition[1]--;
-              var color1 = this.color;
-              var color2 = this.attachedPill.color;
-              var auxX1=this.cellPosition[0];
-              var auxY1=this.cellPosition[1];
-              var auxX2=this.attachedPill.cellPosition[0];
-              var auxY2=this.attachedPill.cellPosition[1];
-
+              this.copyPill();
+              board.checkAdjacentColors(this.color, this.cellPosition[0], this.cellPosition[1]);
+              board.checkAdjacentColors(this.attachedPill.color, this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1]);
               this.changePill();
-              board.checkAdjacentColors(color1, auxX1, auxY1);
-              board.checkAdjacentColors(color2, auxX2, auxY2);
-
-
       }
     }
   Pill.prototype.availableCell = function(x,y){
@@ -164,15 +154,12 @@ function Item(game,x,y,color){
 
         }
 
+  Pill.prototype.copyPill = function(){//Copia los valores de la píldora al tablero
+    board.cells[this.cellPosition[1]][this.cellPosition[0]].changeCell(this.color, 'Pill');
+    board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].changeCell(this.attachedPill.color, 'Pill');
+  }
   Pill.prototype.changePill =function(){
-      var auxY = this.cellPosition[0];
-      var auxX = this.cellPosition[1];
-      board.cells[auxX][auxY].changeCell(this.color, 'Pill');
-
-      auxY = this.attachedPill.cellPosition[0];
-      auxX = this.attachedPill.cellPosition[1];
-      board.cells[auxX][auxY].changeCell(this.attachedPill.color, 'Pill');//Marca el color de las píldoras en la celda correspondiente
-
+      this.attachedPill.sprite.destroy();
       this.startPill(3,1,colors[this.game.rnd.integerInRange(0, 2)],colors[this.game.rnd.integerInRange(0, 2)]);
     }
 module.exports = {
