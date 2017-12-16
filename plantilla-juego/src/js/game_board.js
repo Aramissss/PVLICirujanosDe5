@@ -6,6 +6,8 @@ var colors = ['blue', 'yellow', 'red'];
 function gameBoard(Game){
   game =Game;
   this.cells = [];
+  this.pillBroken=false;
+  this.halfPills=[];
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
   for(var i=0; i<17;i++){//Crea array vacío
@@ -82,6 +84,29 @@ function gameBoard(Game){
       }
     }
   }
+
+  this.checkBrothers = function()
+  {
+    var z=0;
+    for(var i=0; i<17;i++){//Crea array vacío
+    for(var j=0; j<8;j++){
+      if( this.cells[i][j].brother==true)
+        {
+
+          if(this.cells[this.cells[i][j].brotherY][this.cells[i][j].brotherX].kind == 'none')
+          {
+            this.pillBroken=true;
+            this.halfPills[z]=[];
+            this.halfPills[z][0]=this.cells[i][j].posY;
+            this.halfPills[z][1]=this.cells[i][j].posX;
+            z++;
+          }
+        }
+    }
+
+  }
+  console.log(this.halfPills);
+  }
   this.checkColor = function(x,y){
     return this.cells[y][x].color;
   }
@@ -102,6 +127,9 @@ function cell (game, color, posX, posY){
     this.kind = 'none';
     this.posX = posX;
     this.posY = posY;
+    this.brother= false;
+    this.brotherX= -1;
+    this.brotherY = -1;
     this.color = color;
     this.sprite = game.add.sprite(16*posX+336,16*posY+180, 'blank');
     this.sprite.scale.setTo(2,2);
@@ -111,10 +139,34 @@ function cell (game, color, posX, posY){
         this.color = color;
         this.sprite.loadTexture(color + kind);
     }
+  
+    this.setBrother = function( x, y)
+    {
+      this.brother=true;
+      this.brotherX=x;
+      this.brotherY=y;
+
+    }
+    this.infoBrother = function()
+    {
+      console.log('Entro');
+      return this.brother;
+    }
+
+    /*this.BrotherX = function()
+    {
+      return this.brotherX;
+    }
+    this.BrotherY = function()
+    {
+      
+      return this.brotherY;
+    }*/
 
     this.destroyCell = function(){
       this.kind='none';
       this.color ='none';
+      this.brother =false;
       this.sprite.loadTexture('blank');
 
     }

@@ -138,6 +138,9 @@ function Pill(game,x,y,color1, color2, Board){//Píldoras, heredan de Item
               this.copyPill();
               board.checkAdjacentColors(this.color, this.cellPosition[0], this.cellPosition[1]);
               board.checkAdjacentColors(this.attachedPill.color, this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1]);
+              this.attachedPill.sprite.destroy();
+              board.checkBrothers();
+
               this.changePill();
       }
     }
@@ -156,10 +159,11 @@ function Pill(game,x,y,color1, color2, Board){//Píldoras, heredan de Item
 
   Pill.prototype.copyPill = function(){//Copia los valores de la píldora al tablero
     board.cells[this.cellPosition[1]][this.cellPosition[0]].changeCell(this.color, 'Pill');
+    board.cells[this.cellPosition[1]][this.cellPosition[0]].setBrother(this.attachedPill.cellPosition[0],this.attachedPill.cellPosition[1]);
     board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].changeCell(this.attachedPill.color, 'Pill');
+    board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].setBrother(this.cellPosition[0],this.cellPosition[1]);
   }
   Pill.prototype.changePill =function(){
-      this.attachedPill.sprite.destroy();
       this.startPill(3,1,colors[this.game.rnd.integerInRange(0, 2)],colors[this.game.rnd.integerInRange(0, 2)]);
     }
 module.exports = {
