@@ -85,7 +85,7 @@ function gameBoard(Game){
     }
   }
 
-  this.checkBrothers = function()
+  this.checkBrothers = function()//Busca y guarda la posición de todas las píldoras que se han roto
   {
     var z=0;
     for(var i=0; i<17;i++){//Crea array vacío
@@ -104,7 +104,7 @@ function gameBoard(Game){
         }
     }
 
-  }
+    }
   console.log(this.halfPills);
   }
   this.checkColor = function(x,y){
@@ -147,21 +147,6 @@ function cell (game, color, posX, posY){
       this.brotherY=y;
 
     }
-    this.infoBrother = function()
-    {
-      console.log('Entro');
-      return this.brother;
-    }
-
-    /*this.BrotherX = function()
-    {
-      return this.brotherX;
-    }
-    this.BrotherY = function()
-    {
-      
-      return this.brotherY;
-    }*/
 
     this.destroyCell = function(){
       this.kind='none';
