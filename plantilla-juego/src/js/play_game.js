@@ -3,6 +3,7 @@ var item = require('./item.js');
 var gameBoard = require('./game_board.js');
 var Item = item.Item;
 var Pill = item.Pill;
+var HalfPill = item.HalfPill;
 var GameBoard = gameBoard.gameBoard;
 var Cell= gameBoard.cell;
 
@@ -22,8 +23,7 @@ var mediumSpeed=400;
 var highSpeed=250;
 var fallDelay;
 var timer, fallLoop, moveLoop;
-var inputStartTime;
-var moveDelay=fallDelay/4;
+
 var keyInput='';
 
 var rotDir=0;//0=null 1=clockwise -1=anticlockwise
@@ -51,7 +51,7 @@ GameScene.create = function(){
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
 
     board = new GameBoard(game);
-    level=3;
+    level=1;
     if(level>=15){
       maxY=4;
     }
@@ -60,16 +60,14 @@ GameScene.create = function(){
     }
     else maxY=10;
     board.createVirus(level*4+4,maxY);
-
-    currentPill = new Pill(this.game, 3,0, 'red','yellow', board);//Crea píldota nueva
-    currentPill.startPill(3,1,'red','yellow');
-    currentPill.scale.setTo(2,2);
-    currentPill.anchor.setTo(0,0);
+    currentPill = new Pill(game, 3,0, 'red','yellow', board);//Crea píldota nueva
+    currentPill.startPill(3,1,'red','yellow');   
+    
     this.game.add.existing(currentPill);//La añade al game
-
-    timer = this.game.time.events;//Temporizador
+    
+    /*timer = this.game.time.events;//Temporizador
     fallLoop = timer.loop(fallDelay, currentPill.fall, currentPill);//Bucle de caída
-    timer.start();
+    timer.start();*/
   }
 
 GameScene.update = function() {
@@ -118,10 +116,12 @@ function inputManager(){
     }
 
     if(cursors.down.isDown){//Cuando se pulsa hacia abajo el delay es menor
-       fallLoop.delay=100;
+       //fallLoop.delay=100;
+       currentPill.setFallSpeed(100);
     }
     else{
-       fallLoop.delay=fallDelay;
+      // fallLoop.delay=fallDelay;
+      currentPill.setFallSpeed(currentPill.fallDelay);
     }
   }
 
