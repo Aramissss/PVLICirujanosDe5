@@ -5,18 +5,39 @@ var game;
 var colors = ['blue', 'yellow', 'red'];
 function gameBoard(Game){
   game =Game;
-  this.cells = [];
   this.pillBroken=false;
   this.halfPills=[];
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
-  for(var i=0; i<17;i++){//Crea array vacío
-      this.cells[i]=[];
-    for(var j=0; j<8;j++){
-      this.cells[i][j]= new cell(game, 'none', j , i);
+  this.virus =0;
+  this.maxY=0;//Altura máxima a la que puede aparecer un virus
+  this.createBoard=function(level){
+    this.cells = [];
+    for(var i=0; i<17;i++){//Crea array vacío
+        this.cells[i]=[];
+      for(var j=0; j<8;j++){
+        this.cells[i][j]= new cell(game, 'none', j , i);
+      }
+    }
+    if(level>=15){//Se pone una altura según el nivel
+      this.maxY=4;
+    }
+    else if(level>=10){
+      this.maxY=7;
+    }
+    else this.maxY=10;
+    this.createVirus(level*4+4,this.maxY);
+  }
+  this.clearBoard=function(){
+    for(var i=0;i<17;i++){
+      for(var j=0;j<8;j++){
+        this.cells[i][j].sprite.destroy();
+        this.cells[i][j]=undefined;
+      }
     }
   }
   this.createVirus = function(number, maxY){//maxY es la altura maxima donde puede aparecer un virus
+    this.virus=number;
     for(var i=0;i<number;i++){
         var rndY=game.rnd.integerInRange(maxY, 16);
         var rndX=game.rnd.integerInRange(0, 7);
@@ -24,12 +45,29 @@ function gameBoard(Game){
           rndY=game.rnd.integerInRange(maxY, 16);
           rndX=game.rnd.integerInRange(0, 7);
         }
-        this.cells[rndY][rndX].changeCell(colors[game.rnd.integerInRange(0, 2)], 'Virus');
+        this.cells[rndY][rndX].changeCell(colors[game.rnd.integerInRange(0, 2)], 'Virus', 0,false);
+        this.checkAdjacentInBoard();
+    }
+  }
+  this.checkGameOver = function(){
+    if(this.cells[1][3].kind=='Pill' || this.cells[1][4].kind=='Pill'){
+      return true;
+    }
+    else return false;
+  }
+  this.checkAdjacentInBoard = function(){//Comprueba si hay colores adyacentes en el tablero, se usa cuando varias píldoras se han movido o cuando se crean virus
+    for(var i=0;i<17;i++){
+      for(var j=0;j<8;j++){
+        if(this.cells[i][j].color!='none')
+          this.checkAdjacentColors(this.cells[i][j].color, j,i);
+      }
     }
   }
   this.checkAdjacentColors = function(color, posX, posY){
-      this.checkHorizontal(color,posX,posY);
-      this.checkVertical(color,posX,posY);
+      if(this.checkHorizontal(color,posX,posY) || this.checkVertical(color,posX,posY)){
+        this.pillBroken=true;
+        return true;
+      }
   }
   this.checkHorizontal = function(color, posX, posY){
     //Horizontal
@@ -53,11 +91,18 @@ function gameBoard(Game){
       for(var i =0;i<cont;i++){
         auxX = destroyablePills[i][0];
         auxY = destroyablePills[i][1];
+        if(this.cells[auxY][auxX].kind=='Pill'&&this.cells[auxY][auxX].brotherX!=-1&&this.cells[auxY][auxX].color!='none'){
+          this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].setBrother(-1,-1);
+          this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].changeCell(this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].color, 'Pill',this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].rotationState,this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].attached);
+        }
+        else if(this.cells[auxY][auxX].kind=='Virus'){
+          this.virus--;
+        }
         this.cells[auxY][auxX].destroyCell();
       }
+      return true;
     }
   }
-
   this.checkVertical = function(color, posX, posY){
     //Vertical
     var cont=0;//Contador de colores adyacentes iguales
@@ -79,33 +124,92 @@ function gameBoard(Game){
       for(var i =0;i<cont;i++){
         auxX = destroyablePills[i][0];
         auxY = destroyablePills[i][1];
+        if(this.cells[auxY][auxX].kind=='Pill'&&this.cells[auxY][auxX].brotherX!=-1&&this.cells[auxY][auxX].color!='none'){
+          this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].setBrother(-1,-1);//Deja sin hermano a la otra píldora
+          this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].changeCell(this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].color, 'Pill',this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].rotationState,this.cells[this.cells[auxY][auxX].brotherY][this.cells[auxY][auxX].brotherX].attached);
+        }
+        else if(this.cells[auxY][auxX].kind=='Virus'){
+          this.virus--;
+        }
         this.cells[auxY][auxX].destroyCell();
+      }
+      return true;
+    }
+  }
+  this.checkBrothers = function()//Busca y guarda la posición de todas las píldoras que se han roto
+  {
+    this.halfPills =[];
+    this.setHalfPills = function(index, posY,posX,color,brotherY,brotherX,rotationState,attached){
+      this.halfPills[index]=[];
+      this.halfPills[index][0]=posY
+      this.halfPills[index][1]=posX;
+      this.halfPills[index][2]=color;
+      this.halfPills[index][3]=brotherY;
+      this.halfPills[index][4]=brotherX;
+      this.halfPills[index][5]=rotationState;
+      this.halfPills[index][6]=attached;
+    }
+    var z=0;
+    for(var i=16; i>=0;i--){//Crea array vacío
+    for(var j=7; j>=0;j--){//Las recorre de abajo hacia arriba para que no haya conflicto
+      if(this.cells[i][j].kind=='Pill'){//Tiene que ser una píldora
+          if((this.cells[i][j].brotherY == -1 && this.cells[i][j].brotherX == -1)){//Tiene que estar sola
+              if((this.availableCell(j,i+1) && this.checkColor(j,i+1)=='none')){
+                this.pillBroken=true;
+                this.setHalfPills(z,this.cells[i][j].posY,this.cells[i][j].posX,this.cells[i][j].color,this.cells[i][j].brotherY,this.cells[i][j].brotherX,this.cells[i][j].rotationState,this.cells[i][j].attached);
+                z++;
+              }
+          }
+          //Comprueba si hay píldoras enteras flotando
+          else  if((this.availableCell(j,i+1) && this.availableCell(this.cells[i][j].brotherX,this.cells[i][j].brotherY+1)) ){//Puede haber píldoras en vertical u horizontal
+              if((this.checkColor(j,i+1)=='none' && this.checkColor(this.cells[i][j].brotherX,this.cells[i][j].brotherY+1)=='none')//Horizontal
+               || (this.cells[i][j].brotherY>i)&&(this.availableCell(j,i+1) && this.availableCell(this.cells[i][j].brotherX,this.cells[i][j].brotherY+1) && (this.checkColor(this.cells[i][j].brotherX,this.cells[i][j].brotherY+1)=='none'))//Attached abajo
+               || (this.cells[i][j].brotherY<i &&(this.availableCell(j,i+1) && this.availableCell(this.cells[i][j].brotherX,this.cells[i][j].brotherY+1) && (this.checkColor(j,i+1)=='none')))) {//Attached arriba
+                this.pillBroken=true;
+                this.setHalfPills(z,this.cells[i][j].posY,this.cells[i][j].posX,this.cells[i][j].color,this.cells[i][j].brotherY,this.cells[i][j].brotherX,this.cells[i][j].rotationState,this.cells[i][j].attached);
+                z++;
+                this.setHalfPills(z,this.cells[i][j].brotherY,this.cells[i][j].brotherX,this.cells[this.cells[i][j].brotherY][this.cells[i][j].brotherX].color,this.cells[i][j].posY,
+                this.cells[i][j].posX,this.cells[this.cells[i][j].brotherY][this.cells[i][j].brotherX].rotationState,this.cells[this.cells[i][j].brotherY][this.cells[i][j].brotherX].attached);
+                z++;
+              }
+            }
+          }
 
       }
     }
+    return this.halfPills;
   }
-
-  this.checkBrothers = function()//Busca y guarda la posición de todas las píldoras que se han roto
-  {
-    var z=0;
-    for(var i=0; i<17;i++){//Crea array vacío
-    for(var j=0; j<8;j++){
-      if( this.cells[i][j].brother==true)
-        {
-
-          if(this.cells[this.cells[i][j].brotherY][this.cells[i][j].brotherX].kind == 'none')
-          {
-            this.pillBroken=true;
-            this.halfPills[z]=[];
-            this.halfPills[z][0]=this.cells[i][j].posY;
-            this.halfPills[z][1]=this.cells[i][j].posX;
-            z++;
+  this.collapseLoop = function(timer){
+      var arrayHalfPills = this.checkBrothers();
+      this.collapsePills();
+      if(arrayHalfPills.length==0){
+        this.pauseTimer();
+        timer.resume();
+      }
+  }
+  this.collapsePills = function(){//Junta todas las píldoras que puedan haber quedado sueltas
+    for(var i=0; i<this.halfPills.length;i++){
+      if(this.halfPills[i][3]!=-1){//Aquí entran las píldoras enteras
+        if(this.availableCell(this.halfPills[i][1], this.halfPills[i][0]+1) && this.checkColor(this.halfPills[i][1], this.halfPills[i][0]+1)=='none'){
+          if(i+1<this.halfPills.length){
+            if(this.availableCell(this.halfPills[i+1][4], this.halfPills[i+1][3]+1) && this.checkColor(this.halfPills[i+1][4], this.halfPills[i+1][3]+1)=='none' ){
+              this.cells[this.halfPills[i][0]+1][this.halfPills[i][1]].setBrother(this.halfPills[i][4], this.halfPills[i][3]+1);
+              this.cells[this.halfPills[i][0]+1][this.halfPills[i][1]].changeCell(this.halfPills[i][2], 'Pill',this.halfPills[i][5], this.halfPills[i][6]);
+              this.cells[this.halfPills[i][0]][this.halfPills[i][1]].destroyCell();
+              i++;
+              this.cells[this.halfPills[i][0]+1][this.halfPills[i][1]].setBrother(this.halfPills[i][4], this.halfPills[i][3]+1);
+              this.cells[this.halfPills[i][0]+1][this.halfPills[i][1]].changeCell(this.halfPills[i][2], 'Pill',this.halfPills[i][5], this.halfPills[i][6]);
+              this.cells[this.halfPills[i][0]][this.halfPills[i][1]].destroyCell();
+            }
           }
         }
-    }
+      }
 
+      else if(this.availableCell(this.halfPills[i][1], this.halfPills[i][0]+1) && this.checkColor(this.halfPills[i][1], this.halfPills[i][0]+1)=='none'){//Comprueba si pueden caer
+        this.cells[this.halfPills[i][0]+1][this.halfPills[i][1]].changeCell(this.halfPills[i][2], 'Pill',this.halfPills[i][5], this.halfPills[i][6]);
+        this.cells[this.halfPills[i][0]][this.halfPills[i][1]].destroyCell();
+      }
     }
-  console.log(this.halfPills);
   }
   this.checkColor = function(x,y){
     return this.cells[y][x].color;
@@ -122,7 +226,6 @@ function gameBoard(Game){
     }
   }
 }
-
 function cell (game, color, posX, posY){
     this.kind = 'none';
     this.posX = posX;
@@ -131,33 +234,47 @@ function cell (game, color, posX, posY){
     this.brotherX= -1;
     this.brotherY = -1;
     this.color = color;
-    this.sprite = game.add.sprite(16*posX+336,16*posY+180, 'blank');
+    this.sprite = game.add.sprite(16*posX+344,16*posY+188, 'blank');
+    this.sprite.anchor.setTo(0.5,0.5);
     this.sprite.scale.setTo(2,2);
-    this.sprite.anchor.setTo(0,0);
-    this.changeCell = function(color, kind){//Kind: Virus or Pill
+    this.attached = false;
+    this.rotationState=0;
+    this.changeCell = function(color, kind, rotState, at){//Kind: Virus or Pill
+        this.rotationState=rotState;
+        this.attached=at;
+        this.sprite.angle = this.rotationState*90;//Rota el sprite
         this.kind = kind;
         this.color = color;
-        this.sprite.loadTexture(color + kind);
+        if(this.attached){//Booleano que indica si es la píldora auxiliar
+          this.sprite.scale.setTo(-2,2);
+        }
+        else {
+          this.sprite.scale.setTo(2,2);
+        }
+        if(this.kind!='none'){
+          this.sprite.loadTexture(color + kind);
+        }
+        if(this.kind=='Pill' && (this.brotherX==-1) && this.color!='none'){
+          this.sprite.loadTexture(color);
+        }
     }
-  
+
     this.setBrother = function( x, y)
     {
       this.brother=true;
       this.brotherX=x;
       this.brotherY=y;
-
     }
-
     this.destroyCell = function(){
+      this.attached=false;
       this.kind='none';
       this.color ='none';
       this.brother =false;
+      this.brotherX=-1;
+      this.brotherY=-1;
       this.sprite.loadTexture('blank');
-
     }
 }
-
-
 module.exports = {
   gameBoard : gameBoard,
   cell : cell,
