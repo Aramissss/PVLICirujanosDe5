@@ -10,7 +10,7 @@ var BootScene = {
     this.game.load.baseURL = 'https://aramissss.github.io/PVLICirujanosDe5/plantilla-juego/src/';
     this.game.load.crossOrigin = 'anonymous';
     this.game.load.image('preloader_bar', 'images/preloader_bar.png');
-    this.game.load.image('menuButton','images/menuButton.png');
+    this.game.load.image('menuButton','images/MenuButton.png');
   },
 
   create: function () {
@@ -26,7 +26,7 @@ var PreloaderScene = {
     this.load.setPreloadSprite(this.loadingBar);
 
     // TODO: load here the assets for the game
-    this.load.image('menuButton','images/menuButton.png');
+    this.load.image('menuButton','images/MenuButton.png');
   },
 
   create: function () {
