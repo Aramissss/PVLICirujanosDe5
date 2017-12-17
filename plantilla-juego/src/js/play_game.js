@@ -1,40 +1,48 @@
 'use strict';
 var item = require('./item.js');
+var gameBoard = require('./game_board.js');
 var Item = item.Item;
 var Pill = item.Pill;
+
+var GameBoard = gameBoard.gameBoard;
+var Cell= gameBoard.cell;
 
 var cursors;
 var ZKey;
 var XKey;
+var board;
 var currentPill;
 var glass;
 var game;
+var level;
+var maxY;//Altura máxima a la que puede aparecer un virus
 
-//'none' 'blue' 'yellow' 'red'
-var cells = [];//Array que contiene las casillas
-var cellsSprites = [];//Array que contiene los sprites de las casillas
 var lowSpeed=500;
 var mediumSpeed=400;
 var highSpeed=250;
 var fallDelay;
 var timer, fallLoop, moveLoop;
-var inputStartTime;
-var moveDelay=fallDelay/4;
-var keyInput='';
-var cellWidth, cellHeight;
-var movable;
-var colors = ['blue', 'yellow', 'red'];
-var rotDir=0;//0=null 1=clockwise -1=anticlockwise
 
+var keyInput='';
+
+var rotDir=0;//0=null 1=clockwise -1=anticlockwise
 var GameScene = {};
 GameScene.preload = function(){//Carga los sprites
   this.game.load.image('blue', 'images/blue.png');
   this.game.load.image('yellow', 'images/yellow.png');
   this.game.load.image('red', 'images/red.png');
+  this.game.load.image('bluePill', 'images/bluePill.png');
+  this.game.load.image('yellowPill', 'images/yellowPill.png');
+  this.game.load.image('redPill', 'images/redPill.png');
+  this.game.load.image('blueVirus', 'images/blueVirus.png');
+  this.game.load.image('yellowVirus', 'images/yellowVirus.png');
+  this.game.load.image('redVirus', 'images/redVirus.png');
   this.game.load.image('glass', 'images/glass.png');
+  this.game.load.image('blank', 'images/blank.png');
 }
 GameScene.create = function(){
     //Añade el sprite de fondo
+    level=0;
     fallDelay=lowSpeed;
     glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
     game=this.game;
@@ -44,42 +52,43 @@ GameScene.create = function(){
     ZKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
     XKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
-    cellWidth=16;//Medidas de las celdas
-    cellHeight=16;
-    for(var i=0; i<17;i++){//Crea array vacío
-        cells[i]=[];
-      for(var j=0; j<8;j++){
-        cells[i][j]='none';
-      }
-    }
-    for(var i=0; i<17;i++){//Crea array vacío
-      cellsSprites[i]=[];
-      for(var j=0; j<8;j++){
-        cellsSprites[i][j]='none';
-        cellsSprites[i][j] = game.add.sprite(16*j+336,16*i+180);//Les añade sprites vaciós a las celdas
-      }
-    }
+    board = new GameBoard(game);
+    currentPill = new Pill(game, 3,0, 'red','yellow', board);//Crea píldota nueva
+    game.add.existing(currentPill);//La añade al game
+    setLevel();
 
-    currentPill = new Pill(this.game, 3,0, 'red','yellow');//Crea píldota nueva
-    currentPill.startPill(3,1,'red','yellow');
-    currentPill.scale.setTo(2,2);
-    currentPill.anchor.setTo(0,0);
-    this.game.add.existing(currentPill);//La añade al game
-
-    timer = this.game.time.events;//Temporizador
-    fallLoop = timer.loop(fallDelay, currentPill.fall, currentPill);//Bucle de caída
-    timer.start();
   }
-
 GameScene.update = function() {
     inputManager();
     currentPill.move(keyInput);
+    checkGameEnd();
+    game.debug.text("Virus Left: " + board.virus, 32, 80);
+    game.debug.text("Level: " + level, 32, 32);
 
-    paintMap();
+
   }
+function checkGameEnd(){
+  if(board.virus<=0){
+    level++;
+    board.clearBoard();
+    currentPill.attachedPill.sprite.destroy();
+    setLevel();
+  }
+  else if(board.checkGameOver()){
+    level=0;
+    board.clearBoard();
+    currentPill.attachedPill.sprite.destroy();
+    setLevel();
+  }
+}
+function setLevel(){
+  board.createBoard(level);
+  currentPill.startPill(3,1,'red','yellow');
 
+
+}
 function inputManager(){
-    if(cursors.right.isDown){
+    if(cursors.right.isDown && !board.pillBroken){
       if(cursors.right.duration<1){//Simula aumento de velocidad si se mantiene pulsado
         keyInput='r';
       }
@@ -90,7 +99,7 @@ function inputManager(){
         keyInput='';
       }
     }
-    else if(cursors.left.isDown){
+    else if(cursors.left.isDown && !board.pillBroken){
       if(cursors.left.duration<1){//Simula aumento de velocidad si se mantiene pulsado
         keyInput='l';
       }
@@ -104,65 +113,23 @@ function inputManager(){
     else{
       keyInput='';
     }
-    if(XKey.isDown && XKey.duration<1) {//Clockwise
+    if(XKey.isDown && XKey.duration<1 && !board.pillBroken) {//Clockwise
       rotDir=1;
-      currentPill.rotate(rotDir);
+      currentPill.setRotation(rotDir);
     }
-    else if(ZKey.isDown && ZKey.duration<1){//Anticlockwise
+    else if(ZKey.isDown && ZKey.duration<1 && !board.pillBroken){//Anticlockwise
       rotDir=-1;
-      currentPill.rotate(rotDir);
+      currentPill.setRotation(rotDir);
     }
     else {
       rotDir=0;
     }
 
     if(cursors.down.isDown){//Cuando se pulsa hacia abajo el delay es menor
-       fallLoop.delay=100;
+       currentPill.setFallSpeed(100);
     }
     else{
-       fallLoop.delay=fallDelay;
+      currentPill.setFallSpeed(currentPill.fallDelay);
     }
   }
-      //Método que devuelve un booleano dependiendo de si la celda contiene algún color
-    global.availableCell = function(x,y){
-          if(cells[y][x]=='none'){
-            return true;
-          }
-          else return false;
-        }
-
-    global.changePill =function(){
-      var auxY = currentPill.cellPosition[0];
-      var auxX = currentPill.cellPosition[1];
-      cells[auxX][auxY] = currentPill.color;
-
-      auxY = currentPill.attachedPill.cellPosition[0];
-      auxX = currentPill.attachedPill.cellPosition[1];
-      cells[auxX][auxY] = currentPill.attachedPill.color;//Marca el color de las píldoras en la celda correspondiente
-
-      currentPill.startPill(3,1,colors[game.rnd.integerInRange(0, 2)],colors[game.rnd.integerInRange(0, 2)]);
-    }
-    function paintMap(){
-      for(var i=0; i<17;i++){
-        for(var j=0; j<8;j++){
-          if(cells[i][j]=='yellow'){
-            cellsSprites[i][j].loadTexture('yellow');
-            cellsSprites[i][j].scale.setTo(2,2);
-            cellsSprites[i][j].anchor.setTo(0,0);
-          }
-          else if(cells[i][j]=='red'){
-            cellsSprites[i][j].loadTexture('red');
-            cellsSprites[i][j].scale.setTo(2,2);
-            cellsSprites[i][j].anchor.setTo(0,0);
-          }
-          else if(cells[i][j]=='blue'){
-            cellsSprites[i][j].loadTexture('blue');
-            cellsSprites[i][j].scale.setTo(2,2);
-            cellsSprites[i][j].anchor.setTo(0,0);
-          }
-        }
-      }
-    }
-
-
 module.exports = GameScene;
