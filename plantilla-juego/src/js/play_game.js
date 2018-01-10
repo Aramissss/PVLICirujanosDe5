@@ -1,20 +1,23 @@
 'use strict';
 var item = require('./item.js');
 var gameBoard = require('./game_board.js');
+var options1 = require ('./options1.js');
 var Item = item.Item;
 var Pill = item.Pill;
 
 var GameBoard = gameBoard.gameBoard;
 var Cell= gameBoard.cell;
 
+var level;
 var cursors;
 var ZKey;
 var XKey;
 var board;
 var currentPill;
 var glass;
+var background;
 var game;
-var level;
+
 var maxY;//Altura máxima a la que puede aparecer un virus
 
 var lowSpeed=500;
@@ -22,37 +25,43 @@ var mediumSpeed=400;
 var highSpeed=250;
 var fallDelay;
 var timer, fallLoop, moveLoop;
-
+var level;
+var DrMariano;
 var keyInput='';
-
+var DrMarianoBackground;
+var scoreWindow1;
+var scoreWindow2;
 var rotDir=0;//0=null 1=clockwise -1=anticlockwise
 var GameScene = {};
-GameScene.preload = function(){//Carga los sprites
-  this.game.load.image('blue', 'images/blue.png');
-  this.game.load.image('yellow', 'images/yellow.png');
-  this.game.load.image('red', 'images/red.png');
-  this.game.load.image('bluePill', 'images/bluePill.png');
-  this.game.load.image('yellowPill', 'images/yellowPill.png');
-  this.game.load.image('redPill', 'images/redPill.png');
-  this.game.load.image('blueVirus', 'images/blueVirus.png');
-  this.game.load.image('yellowVirus', 'images/yellowVirus.png');
-  this.game.load.image('redVirus', 'images/redVirus.png');
-  this.game.load.image('glass', 'images/glass.png');
-  this.game.load.image('blank', 'images/blank.png');
+var levelText1;
+var levelText2;
+var speedText1;
+var speedText2;
+var scoreText1;
+var scoreText2;
+var virusText1;
+var virusText2;
+var nextPill1;
+var nextPill2;
+var speedString;
+var score;
+var DrMarianoTitle;
+GameScene.preload = function(){
+
 }
 GameScene.create = function(){
+    score=0;
     //Añade el sprite de fondo
-    level=0;
-    fallDelay=lowSpeed;
-    glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
+    level = options1.level;
+    setSpeed();
     game=this.game;
-    glass.scale.setTo(2,2);
-    glass.x =this.game.world.centerX-glass.width/2;
-    glass.y =this.game.world.centerY-glass.height/2;
+    board = new GameBoard(game);
+    this.setGUI();
+
     ZKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
     XKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
-    board = new GameBoard(game);
+
     currentPill = new Pill(game, 3,0, 'red','yellow', board);//Crea píldota nueva
     game.add.existing(currentPill);//La añade al game
     setLevel();
@@ -62,10 +71,51 @@ GameScene.update = function() {
     inputManager();
     currentPill.move(keyInput);
     checkGameEnd();
-    game.debug.text("Virus Left: " + board.virus, 32, 80);
-    game.debug.text("Level: " + level, 32, 32);
+    updateGUI();
+  }
+GameScene.setGUI = function(){
+    background = this.game.add.sprite(0,0, 'background1');
+    glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
+    glass.x =this.game.world.centerX-glass.width/2;
+    glass.y =this.game.world.centerY-glass.height/2;
+    DrMarianoBackground = this.game.add.sprite(425,115,'optionsWindow');
+    DrMarianoBackground.scale.setTo(0.25,0.25);
+    DrMarianoTitle = this.game.add.sprite(86,0,'DrMarianoTitle');
 
+    scoreWindow1 = this.game.add.sprite(410,250,'scoreWindow');
+    levelText1 = this.game.add.bitmapText(430,280,'pixel','LEVEL',45);
+    levelText2 = this.game.add.bitmapText(500,310,'pixel',level,45);
+    speedText1 = this.game.add.bitmapText(430,340,'pixel','SPEED',45);
+    speedText2 = this.game.add.bitmapText(480,370,'pixel',speedString,45);
+    virusText1 = this.game.add.bitmapText(430,400,'pixel','VIRUS',45);
+    virusText2 = this.game.add.bitmapText(500,430,'pixel',board.virus,45);
 
+    scoreWindow2 = this.game.add.sprite(30,115,'scoreWindow2');
+    scoreText1 = this.game.add.bitmapText(55,140,'pixel','SCORE',45);
+    scoreText2 = this.game.add.bitmapText(55,165,'pixel',board.score,45);
+
+    levelText1.tint = levelText2.tint = speedText1.tint = speedText2.tint = 0;
+    virusText1.tint = virusText2.tint = scoreText1.tint = scoreText2.tint = 0;
+    nextPill1 = this.game.add.sprite(455,135,'');
+    nextPill2 = this.game.add.sprite(487,135,'');
+    nextPill2.scale.setTo(-1,1);
+    DrMariano = this.game.add.sprite(450, 150, 'DrMariano');
+  }
+function setSpeed(){
+  if(options1.speed==0){
+    speedString='LOW';
+  }
+  else if( options1.speed==1){
+    speedString='MED';
+  }
+  else speedString='HI';
+}
+function updateGUI(){
+    levelText2.text = level;
+    virusText2.text = board.virus;
+    scoreText2.text = board.score;
+    nextPill1.loadTexture(currentPill.nextPill.color1 + 'Pill');
+    nextPill2.loadTexture(currentPill.nextPill.color2 + 'Pill');
   }
 function checkGameEnd(){
   if(board.virus<=0){
@@ -84,8 +134,6 @@ function checkGameEnd(){
 function setLevel(){
   board.createBoard(level);
   currentPill.startPill(3,1,'red','yellow');
-
-
 }
 function inputManager(){
     if(cursors.right.isDown && !board.pillBroken){

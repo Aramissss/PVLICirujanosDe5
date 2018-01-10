@@ -10,6 +10,7 @@ function gameBoard(Game){
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
   this.virus =0;
+  this.score=0;
   this.maxY=0;//Altura máxima a la que puede aparecer un virus
   this.createBoard=function(level){
     this.cells = [];
@@ -98,7 +99,9 @@ function gameBoard(Game){
         else if(this.cells[auxY][auxX].kind=='Virus'){
           this.virus--;
         }
-        this.cells[auxY][auxX].destroyCell();
+        this.cells[auxY][auxX].destroyAnim();
+      //  this.cells[auxY][auxX].destroyCell();
+        this.addScore();
       }
       return true;
     }
@@ -131,10 +134,15 @@ function gameBoard(Game){
         else if(this.cells[auxY][auxX].kind=='Virus'){
           this.virus--;
         }
-        this.cells[auxY][auxX].destroyCell();
+        this.cells[auxY][auxX].destroyAnim();
+        //this.cells[auxY][auxX].destroyCell();
+        this.addScore();
       }
       return true;
     }
+  }
+  this.addScore = function(){
+    this.score+=25;
   }
   this.checkBrothers = function()//Busca y guarda la posición de todas las píldoras que se han roto
   {
@@ -234,9 +242,9 @@ function cell (game, color, posX, posY){
     this.brotherX= -1;
     this.brotherY = -1;
     this.color = color;
-    this.sprite = game.add.sprite(16*posX+344,16*posY+188, 'blank');
+    this.sprite = game.add.sprite(16*posX+244,16*posY+138,'' ,2);
     this.sprite.anchor.setTo(0.5,0.5);
-    this.sprite.scale.setTo(2,2);
+    this.sprite.scale.setTo(1,1);
     this.attached = false;
     this.rotationState=0;
     this.changeCell = function(color, kind, rotState, at){//Kind: Virus or Pill
@@ -246,13 +254,18 @@ function cell (game, color, posX, posY){
         this.kind = kind;
         this.color = color;
         if(this.attached){//Booleano que indica si es la píldora auxiliar
-          this.sprite.scale.setTo(-2,2);
+          this.sprite.scale.setTo(-1,1);
         }
         else {
-          this.sprite.scale.setTo(2,2);
+          this.sprite.scale.setTo(1,1);
         }
         if(this.kind!='none'){
           this.sprite.loadTexture(color + kind);
+          if(this.kind=='Virus'){
+            this.anim = this.sprite.animations.add('idle');
+            this.anim.play(6,true);
+
+          }
         }
         if(this.kind=='Pill' && (this.brotherX==-1) && this.color!='none'){
           this.sprite.loadTexture(color);
@@ -265,14 +278,23 @@ function cell (game, color, posX, posY){
       this.brotherX=x;
       this.brotherY=y;
     }
-    this.destroyCell = function(){
+    this.clearCell = function(){//Reinicia los valores de la celda
       this.attached=false;
       this.kind='none';
       this.color ='none';
       this.brother =false;
       this.brotherX=-1;
       this.brotherY=-1;
-      this.sprite.loadTexture('blank');
+    }
+    this.destroyAnim = function(){//Hace la animación de destrucción y hace clear
+      this.sprite.loadTexture(this.color + 'Explosion');
+      this.anim = this.sprite.animations.add('destroy');
+      this.anim.play(5,false);
+      this.clearCell();
+    }
+    this.destroyCell = function(){//Además de reiniciar los valores destruye el sprite
+      this.sprite.loadTexture();
+      this.clearCell();
     }
 }
 module.exports = {
