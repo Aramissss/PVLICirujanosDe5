@@ -1,8 +1,10 @@
 'use strict';
 
-var GameScene = require('./play_game.js');
+var GameScene1 = require('./game1.js');
+var GameScene2 = require('./game2.js');
 var MenuScene = require('./menu.js');
 var OptionsScene1 = require('./options1.js');
+var OptionsScene2 = require('./options2.js');
 
 
 var BootScene = {
@@ -66,8 +68,10 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
-  game.state.add('playGame', GameScene);
+  game.state.add('1pGame', GameScene1);
+  game.state.add('2pGame', GameScene2);
   game.state.add('menu', MenuScene);
   game.state.add('options1', OptionsScene1);
+  game.state.add('options2', OptionsScene2);
   game.state.start('boot');
 };

@@ -3,9 +3,12 @@
 var cellWidth, cellHeight;
 var game;
 var colors = ['blue', 'yellow', 'red'];
-function gameBoard(Game){
+function gameBoard(Game,xOffset,yOffset){
   game =Game;
   this.pillBroken=false;
+  this.xOffset = xOffset;
+  this.yOffset = yOffset;
+  console.log(this.xOffset);
   this.halfPills=[];
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
@@ -17,7 +20,7 @@ function gameBoard(Game){
     for(var i=0; i<17;i++){//Crea array vacío
         this.cells[i]=[];
       for(var j=0; j<8;j++){
-        this.cells[i][j]= new cell(game, 'none', j , i);
+        this.cells[i][j]= new cell(game, 'none', j , i,this.xOffset,this.yOffset);
       }
     }
     if(level>=15){//Se pone una altura según el nivel
@@ -234,7 +237,7 @@ function gameBoard(Game){
     }
   }
 }
-function cell (game, color, posX, posY){
+function cell (game, color, posX, posY , xOffset, yOffset){
     this.kind = 'none';
     this.posX = posX;
     this.posY = posY;
@@ -242,7 +245,7 @@ function cell (game, color, posX, posY){
     this.brotherX= -1;
     this.brotherY = -1;
     this.color = color;
-    this.sprite = game.add.sprite(16*posX+244,16*posY+138,'' ,2);
+    this.sprite = game.add.sprite(16*posX+xOffset,16*posY+yOffset,'' ,2);
     this.sprite.anchor.setTo(0.5,0.5);
     this.sprite.scale.setTo(1,1);
     this.attached = false;

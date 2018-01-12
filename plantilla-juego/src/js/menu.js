@@ -36,7 +36,7 @@ function inputManager(){
       MenuScene.game.state.start('options1');
     }
     else if (heartIcon.y==345){
-
+      MenuScene.game.state.start('options2');
     }
   }
 }

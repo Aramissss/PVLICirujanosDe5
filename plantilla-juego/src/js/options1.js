@@ -3,6 +3,7 @@
 var background;
 var cursors;
 var enterKey;
+var backspaceKey;
 var optionsWindow;
 var Player1text;
 var P1text;
@@ -28,6 +29,7 @@ OptionsScene1.create = function () {
   this.level=0;
   cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
   enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+  backspaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
   //Colocación de sprites
   background = this.game.add.sprite(0,0, 'background2');
   optionsWindow = this.game.add.sprite(50,0, 'optionsWindow');
@@ -125,9 +127,12 @@ function inputManager(){
   cursors.up.onDown.add(optionUp,this);
   cursors.right.onDown.add(addOption,this);
   cursors.left.onDown.add(substractOption,this);
+  if(backspaceKey.isDown){
+      OptionsScene1.game.state.start('menu');
+  }
   if(enterKey.isDown){
-      OptionsScene1.game.state.start('playGame');
-    }
+      OptionsScene1.game.state.start('1pGame');
+  }
     iconManager();
   }
 module.exports = OptionsScene1;

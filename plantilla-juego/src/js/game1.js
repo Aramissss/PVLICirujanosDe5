@@ -32,7 +32,8 @@ var DrMarianoBackground;
 var scoreWindow1;
 var scoreWindow2;
 var rotDir=0;//0=null 1=clockwise -1=anticlockwise
-var GameScene = {};
+var GameScene1 = {};
+
 var levelText1;
 var levelText2;
 var speedText1;
@@ -46,34 +47,34 @@ var nextPill2;
 var speedString;
 var score;
 var DrMarianoTitle;
-GameScene.preload = function(){
+GameScene1.preload = function(){
 
 }
-GameScene.create = function(){
+GameScene1.create = function(){
     score=0;
     //Añade el sprite de fondo
     level = options1.level;
     setSpeed();
     game=this.game;
-    board = new GameBoard(game);
+    board = new GameBoard(game,244,138);
     this.setGUI();
 
     ZKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
     XKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
 
-    currentPill = new Pill(game, 3,0, 'red','yellow', board);//Crea píldota nueva
+    currentPill = new Pill(game, 3,0, 'red','yellow', board,244,138);//Crea píldota nueva
     game.add.existing(currentPill);//La añade al game
     setLevel();
 
   }
-GameScene.update = function() {
+GameScene1.update = function() {
     inputManager();
     currentPill.move(keyInput);
     checkGameEnd();
     updateGUI();
   }
-GameScene.setGUI = function(){
+GameScene1.setGUI = function(){
     background = this.game.add.sprite(0,0, 'background1');
     glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
     glass.x =this.game.world.centerX-glass.width/2;
@@ -180,4 +181,4 @@ function inputManager(){
       currentPill.setFallSpeed(currentPill.fallDelay);
     }
   }
-module.exports = GameScene;
+module.exports = GameScene1;

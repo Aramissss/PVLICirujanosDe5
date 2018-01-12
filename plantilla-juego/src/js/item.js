@@ -5,8 +5,6 @@ var colors = ['blue', 'yellow', 'red'];
 //Contiene Item, Pills
 function Item(game,x,y,color){
     Phaser.Sprite.call(this, game, x, y, color);//Se le asigna un sprite
-    this.xOffset=244;//la diferencia que hay entre el punto 0 y la posición en pantalla del frasco
-    this.yOffset=138;
     this.color=color;
     this.cellPosition = [0,0];
     this.cellPosition[0]=x;
@@ -32,8 +30,10 @@ function Item(game,x,y,color){
 var lowSpeed=500;
 var mediumSpeed=400;
 var highSpeed=250;
-function Pill(game, x,y,color1, color2, Board){//Píldoras, heredan de Item
+function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, heredan de Item
 
+      this.xOffset=xOffset;//Diferencia que hay hasta su posición de dibujado
+      this.yOffset=yOffset;
        if(options1.speed==0){
          this.fallDelay=lowSpeed;
        }
