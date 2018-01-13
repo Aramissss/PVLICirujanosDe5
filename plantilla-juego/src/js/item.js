@@ -1,6 +1,5 @@
 'use strict'
 var options1 = require ('./options1.js');
-var board;
 var colors = ['blue', 'yellow', 'red'];
 //Contiene Item, Pills
 function Item(game,x,y,color){
@@ -23,7 +22,7 @@ function Item(game,x,y,color){
         else if(x<0 || y<0){
           return false;
         }
-        else if(board.cells[y][x].color=='none'){
+        else if(this.board.cells[y][x].color=='none'){
           return true;
         }
       }
@@ -34,19 +33,11 @@ function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, he
 
       this.xOffset=xOffset;//Diferencia que hay hasta su posición de dibujado
       this.yOffset=yOffset;
-       if(options1.speed==0){
-         this.fallDelay=lowSpeed;
-       }
-       else if( options1.speed==1){
-         this.fallDelay=mediumSpeed;
-       }
-       else {
-         this.fallDelay=highSpeed;
-       }
-       this.fallLoop = game.time.events.loop(this.fallDelay, this.fall, this);//Bucle de caída
+      this.fallDelay=lowSpeed;
+      this.fallLoop = game.time.events.loop(this.fallDelay, this.fall, this);//Bucle de caída
       Item.call(this, game, x, y, color1);
       this.game = game;
-      board = Board;
+      this.board = Board;
       var self=this;
       this.fallLoop.timer.start();
       this.startPill = function(x,y,color1,color2){
@@ -111,6 +102,9 @@ function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, he
         }
       }
     }
+    Pill.prototype.setFallDelay = function (speed){
+        this.fallDelay=speed;
+    }
     Pill.prototype.setRotation = function(rotDir){
       //Coloca la píldora según el estado actual de la rotación
         this.rotationState+=rotDir;
@@ -155,16 +149,16 @@ function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, he
   }
   Pill.prototype.fall = function(){//Función de caída que se repite en bucle
 
-    if(board.pillBroken){
-      var arrayHalfPills = board.checkBrothers();
-      board.pillBroken=false;
-      board.collapsePills();
+    if(this.board.pillBroken){
+      var arrayHalfPills = this.board.checkBrothers();
+      this.board.pillBroken=false;
+      this.board.collapsePills();
       if(arrayHalfPills.length>0){
-        board.pillBroken=true;
+        this.board.pillBroken=true;
 
       }
       else {//Cuando hayan colapsado todas comprueba sus adyacentes
-        board.checkAdjacentInBoard();
+        this.board.checkAdjacentInBoard();
       }
     }
     else{
@@ -175,8 +169,8 @@ function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, he
           this.cellPosition[1]--;
           this.attachedPill.cellPosition[1]--;
           this.copyPill();
-          board.checkAdjacentColors(this.color, this.cellPosition[0], this.cellPosition[1]);
-          board.checkAdjacentColors(this.attachedPill.color, this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1]);
+          this.board.checkAdjacentColors(this.color, this.cellPosition[0], this.cellPosition[1]);
+          this.board.checkAdjacentColors(this.attachedPill.color, this.attachedPill.cellPosition[0], this.attachedPill.cellPosition[1]);
           this.attachedPill.sprite.destroy();
           this.changePill();
 
@@ -190,10 +184,10 @@ function Pill(game, x,y,color1, color2, Board, xOffset, yOffset){//Píldoras, he
       }
     }
   Pill.prototype.copyPill = function(){//Copia los valores de la píldora al tablero
-    board.cells[this.cellPosition[1]][this.cellPosition[0]].setBrother(this.attachedPill.cellPosition[0],this.attachedPill.cellPosition[1]);
-    board.cells[this.cellPosition[1]][this.cellPosition[0]].changeCell(this.color, 'Pill', this.rotationState,false);
-    board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].setBrother(this.cellPosition[0],this.cellPosition[1]);
-    board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].changeCell(this.attachedPill.color, 'Pill', this.rotationState, true);
+    this.board.cells[this.cellPosition[1]][this.cellPosition[0]].setBrother(this.attachedPill.cellPosition[0],this.attachedPill.cellPosition[1]);
+    this.board.cells[this.cellPosition[1]][this.cellPosition[0]].changeCell(this.color, 'Pill', this.rotationState,false);
+    this.board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].setBrother(this.cellPosition[0],this.cellPosition[1]);
+    this.board.cells[this.attachedPill.cellPosition[1]][this.attachedPill.cellPosition[0]].changeCell(this.attachedPill.color, 'Pill', this.rotationState, true);
   }
   Pill.prototype.changePill =function(){//Asigna el color a la píldora y crea la siguiente
       this.startPill(3,1,this.nextPill.color1,this.nextPill.color2);

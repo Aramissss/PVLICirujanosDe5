@@ -133,6 +133,6 @@ function inputManager(){
   if(enterKey.isDown){
       OptionsScene1.game.state.start('1pGame');
   }
-    iconManager();
+  iconManager();
   }
 module.exports = OptionsScene1;

@@ -85,7 +85,7 @@ function iconManager(){//Pone los iconos en su lugar
     optionSelec.y=375;
   }
 
-  selecIcon1p1.x = 140+14*OptionsScene2.level1;    
+  selecIcon1p1.x = 140+14*OptionsScene2.level1;
   selecIcon1p2.x= 140+14*OptionsScene2.level2;
   selecIcon2p1.x = 195+115*OptionsScene2.speed1;
   selecIcon2p2.x= 195+115*OptionsScene2.speed2;
@@ -180,10 +180,10 @@ function inputManager(){
   cursors.up.onDown.add(optionUp,this);
   sKey.onDown.add(optionDown,this);
   wKey.onDown.add(optionUp,this);
-  cursors.right.onDown.add(addOption1,this);
-  cursors.left.onDown.add(substractOption1,this);
-  dKey.onDown.add(addOption2,this);
-  aKey.onDown.add(substractOption2,this);
+  cursors.right.onDown.add(addOption2,this);
+  cursors.left.onDown.add(substractOption2,this);
+  dKey.onDown.add(addOption1,this);
+  aKey.onDown.add(substractOption1,this);
   iconManager();
   if(backspaceKey.isDown){
       OptionsScene2.game.state.start('menu');
@@ -192,6 +192,6 @@ function inputManager(){
   if(enterKey.isDown){
       OptionsScene2.game.state.start('2pGame');
     }
-    
+
   }
 module.exports = OptionsScene2;

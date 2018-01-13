@@ -8,6 +8,7 @@ var heartIcon;
 var MenuScene={};
 var P1text;
 var P2text;
+var DrMarianoTitle;
 MenuScene.create = function () {
   cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
   enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
@@ -16,6 +17,7 @@ MenuScene.create = function () {
 
   //Colocación de sprites en pantalla
   background = this.game.add.sprite(0,0, 'background1');
+  DrMarianoTitle = this.game.add.sprite(75,50,'DrMarianoMainTitle');
   playerSelection = this.game.add.sprite(75,300, 'playerSelection');
   heartIcon = this.game.add.sprite(175,310, 'heartIcon');
   P1text = this.game.add.bitmapText(210, 310, 'pixel','1 Player',50);

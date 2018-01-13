@@ -8,7 +8,6 @@ function gameBoard(Game,xOffset,yOffset){
   this.pillBroken=false;
   this.xOffset = xOffset;
   this.yOffset = yOffset;
-  console.log(this.xOffset);
   this.halfPills=[];
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
@@ -20,7 +19,7 @@ function gameBoard(Game,xOffset,yOffset){
     for(var i=0; i<17;i++){//Crea array vacío
         this.cells[i]=[];
       for(var j=0; j<8;j++){
-        this.cells[i][j]= new cell(game, 'none', j , i,this.xOffset,this.yOffset);
+        this.cells[i][j]= new cell(Game, 'none', j , i,this.xOffset,this.yOffset);
       }
     }
     if(level>=15){//Se pone una altura según el nivel
@@ -50,10 +49,10 @@ function gameBoard(Game,xOffset,yOffset){
           rndX=game.rnd.integerInRange(0, 7);
         }
         this.cells[rndY][rndX].changeCell(colors[game.rnd.integerInRange(0, 2)], 'Virus', 0,false);
-        this.checkAdjacentInBoard();
+        //this.checkAdjacentInBoard();
     }
   }
-  this.checkGameOver = function(){
+  this.checkGameOver = function(){//Comprueba si hay alguna píldora obstruyendo la entrada
     if(this.cells[1][3].kind=='Pill' || this.cells[1][4].kind=='Pill'){
       return true;
     }
@@ -190,14 +189,14 @@ function gameBoard(Game,xOffset,yOffset){
     }
     return this.halfPills;
   }
-  this.collapseLoop = function(timer){
+  /*this.collapseLoop = function(timer){
       var arrayHalfPills = this.checkBrothers();
       this.collapsePills();
       if(arrayHalfPills.length==0){
         this.pauseTimer();
         timer.resume();
       }
-  }
+  }*/
   this.collapsePills = function(){//Junta todas las píldoras que puedan haber quedado sueltas
     for(var i=0; i<this.halfPills.length;i++){
       if(this.halfPills[i][3]!=-1){//Aquí entran las píldoras enteras

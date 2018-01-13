@@ -42,8 +42,11 @@ var PreloaderScene = {
     this.load.spritesheet('yellowExplosion', 'images/yellowExplosion.png',16,16,4);
     this.load.image('scoreWindow', 'images/scoreWindow.png');
     this.load.image('scoreWindow2', 'images/scoreWindow2.png');
+    this.load.image('scoreFrame','images/scoreFrame.png');
+    this.load.image('crown','images/Crown.png');
     this.load.image('levelFrame', 'images/levelFrame.png');
     this.load.image('DrMarianoTitle','images/DrMarianoTitle.png');
+    this.load.image('DrMarianoMainTitle','images/DrMarianoMainTitle.png');
     this.load.image('glass', 'images/glass.png');
     this.load.image('background1', 'images/background.png');
     this.load.image('background2', 'images/background2.png');
@@ -54,6 +57,7 @@ var PreloaderScene = {
     this.load.image('arrowIcon', 'images/arrowIcon.png');
     this.load.image('optionsWindow', 'images/optionsWindow.png');
     this.load.image('levelMeter', 'images/levelMeter.png');
+    this.load.image('advertWindow','images/advertWindow.png');
     this.load.bitmapFont('pixel', 'fonts/pixel.png', 'fonts/pixel.fnt');
   },
 
