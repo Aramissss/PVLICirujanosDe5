@@ -2,7 +2,6 @@
 var item = require('./item.js');
 var gameBoard = require('./game_board.js');
 var options1 = require ('./options1.js');
-var Item = item.Item;
 var Pill = item.Pill;
 
 var GameBoard = gameBoard.gameBoard;
@@ -83,10 +82,6 @@ GameScene1.create = function(){
 
   }
 GameScene1.update = function() {
-    /*inputManager();
-    currentPill.move(keyInput);
-    checkGameEnd();
-    updateGUI();*/
     this.inputManager();
   }
   GameScene1.runLoop = function(){

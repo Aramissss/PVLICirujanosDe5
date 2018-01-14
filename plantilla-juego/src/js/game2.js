@@ -2,7 +2,6 @@
 var item = require('./item.js');
 var gameBoard = require('./game_board.js');
 var options2 = require ('./options2.js');
-var Item = item.Item;
 var Pill = item.Pill;
 
 var GameBoard = gameBoard.gameBoard;
