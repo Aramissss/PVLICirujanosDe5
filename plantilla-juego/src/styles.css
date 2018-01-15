@@ -8,8 +8,7 @@ body {
   margin: 0;
   font-family: Courier, 'Courier New', monospace;
   font-size: 1.6rem;
-  background: #fff;
-  color: #000;
+  background-color: black;
 }
 
 a {
@@ -19,6 +18,7 @@ a {
 main {
   margin: 2rem 0;
   text-align: center;
+  background-color: grey;
 }
 
 #game {
@@ -27,4 +27,13 @@ main {
 
 footer {
   text-align: center;
+}
+table, td, th {
+
+  border: 1px solid white;
+  color: white;
+  text-align: center;    
+}
+table {
+  width: 50%;
 }
