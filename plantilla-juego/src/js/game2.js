@@ -6,6 +6,8 @@ var Pill = item.Pill;
 
 var GameBoard = gameBoard.gameBoard;
 var Cell= gameBoard.cell;
+var moveFX;
+var rotationFX;
 
 var GameScene2 = {};
 GameScene2.preload = function(){
@@ -108,6 +110,8 @@ GameScene2.create = function(){
     this.level2 = options2.level2;
     this.setSpeedString();
     this.game=this.game;
+    moveFX = this.game.add.audio('misc1');
+    rotationFX = this.game.add.audio('misc3');
 
     this.enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -328,7 +332,18 @@ GameScene2.setCrowns = function(){
     this.endGame();
   }
 }
+GameScene2.moveFX = function(){
+  moveFX.play();
+}
+GameScene2.rotationFX = function(){
+  rotationFX.play();
+}
 GameScene2.inputP1 = function(){
+  this.sKey.onDown.add(this.moveFX,this);
+  this.dKey.onDown.add(this.moveFX,this);
+  this.aKey.onDown.add(this.moveFX,this);
+  this.bKey.onDown.add(this.rotationFX,this);
+  this.vKey.onDown.add(this.rotationFX,this);
   if(this.dKey.isDown && !this.board1.pillBroken){
       if(this.dKey.duration<1){//Simula aumento de velocidad si se mantiene pulsado
         this.keyInput1='r';
@@ -374,6 +389,11 @@ GameScene2.inputP1 = function(){
     }
 }
 GameScene2.inputP2 = function(){
+  this.cursors.down.onDown.add(this.moveFX,this);
+  this.cursors.right.onDown.add(this.moveFX,this);
+  this.cursors.left.onDown.add(this.moveFX,this);
+  this.oKey.onDown.add(this.rotationFX,this);
+  this.pKey.onDown.add(this.rotationFX,this);
    if(this.cursors.right.isDown && !this.board2.pillBroken){
       if(this.cursors.right.duration<1){//Simula aumento de velocidad si se mantiene pulsado
         this.keyInput2='r';

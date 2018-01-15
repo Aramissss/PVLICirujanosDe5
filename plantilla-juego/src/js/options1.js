@@ -19,10 +19,12 @@ var selecIcon1;//Icono para el nivel
 var selecIcon2;//Icono para la velocidad
 var selecIcon3;//Icono para la música
 var levelFrame;
+var sound2;
 
 var OptionsScene1={};
 
 OptionsScene1.create = function () {
+  sound2 = this.game.add.audio('misc2');
   this.option=1;//Variable que indica en qué opción está posado el icono
   this.speed=0;
   this.music=0;
@@ -71,18 +73,21 @@ function iconManager(){//Pone los iconos en su lugar
 
 }
 function optionDown(){
+    playFx();
   OptionsScene1.option++;
   if(OptionsScene1.option>3){
     OptionsScene1.option=3;
   }
 }
 function optionUp(){
+    playFx();
   OptionsScene1.option--;
   if(OptionsScene1.option<1){
     OptionsScene1.option=1;
   }
 }
 function addOption(){
+    playFx();
   if(OptionsScene1.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene1.level++;
     if(OptionsScene1.level>20){
@@ -103,6 +108,7 @@ function addOption(){
   }
 }
 function substractOption(){
+  playFx();
   if(OptionsScene1.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene1.level--;
     if(OptionsScene1.level<0){
@@ -121,6 +127,9 @@ function substractOption(){
       OptionsScene1.music=0;
     }
   }
+}
+function playFx(){
+  sound2.play();
 }
 function inputManager(){
   cursors.down.onDown.add(optionDown,this)

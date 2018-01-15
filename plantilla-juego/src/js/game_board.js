@@ -5,8 +5,12 @@ var game;
 var colors = ['blue', 'yellow', 'red'];
 var destroyablePills = [];//Array con las posiciones de las píldoras a destruir
 var cont=0;//Contador del array
+var color;
+var destroySound;
 function gameBoard(Game,xOffset,yOffset){
+
   game =Game;
+  destroySound = game.add.audio('misc4');
   this.pillBroken=false;
   this.xOffset = xOffset;
   this.yOffset = yOffset;
@@ -14,6 +18,9 @@ function gameBoard(Game,xOffset,yOffset){
   this.cellWidth =  16;//Medidas de las celdas
   this.cellHeight = 16;
   this.virus =0;
+  this.yellowVirus=0;
+  this.blueVirus=0;
+  this.redVirus=0;
   this.score=0;
   this.maxY=0;//Altura máxima a la que puede aparecer un virus
 
@@ -44,6 +51,9 @@ function gameBoard(Game,xOffset,yOffset){
   }
   this.createVirus = function(number, maxY){//maxY es la altura maxima donde puede aparecer un virus
     this.virus=number;
+    this.yellowVirus=0;
+    this.redVirus=0;
+    this.blueVirus=0;
     for(var i=0;i<number;i++){//Crea virus en posiciones aleatorias
         var rndY=game.rnd.integerInRange(maxY, 16);
         var rndX=game.rnd.integerInRange(0, 7);
@@ -51,7 +61,17 @@ function gameBoard(Game,xOffset,yOffset){
           rndY=game.rnd.integerInRange(maxY, 16);
           rndX=game.rnd.integerInRange(0, 7);
         }
-        this.getCell(rndX,rndY).changeCell(colors[game.rnd.integerInRange(0, 2)], 'Virus', 0,false);
+        color=colors[game.rnd.integerInRange(0, 2)];
+        this.getCell(rndX,rndY).changeCell(color, 'Virus', 0,false);
+        if(color=='yellow'){
+          this.yellowVirus++;
+        }
+        else if(color=='blue'){
+          this.blueVirus++;
+        }
+        else if(color=='red'){
+          this.redVirus++;
+        }
     }
   }
   this.checkGameOver = function(){//Comprueba si hay alguna píldora obstruyendo la entrada
@@ -155,6 +175,9 @@ function gameBoard(Game,xOffset,yOffset){
     }
     else false;
   }
+  this.destroyFX = function(){
+    destroySound.play();
+  }
   this.destroyAdjacentCells = function(){//Destruye las celdas que están adyacentes
     for(var i =0;i<cont;i++){
       var auxX = destroyablePills[i][0];
@@ -164,11 +187,61 @@ function gameBoard(Game,xOffset,yOffset){
         this.getCell(this.getBrotherX(auxX,auxY),this.getBrotherY(auxX,auxY)).changeCell(this.getColor(this.getBrotherX(auxX,auxY),this.getBrotherY(auxX,auxY)), 'Pill',this.getCell(this.getBrotherX(auxX,auxY),this.getBrotherY(auxX,auxY)).rotationState,this.getCell(this.getBrotherX(auxX,auxY),this.getBrotherY(auxX,auxY)).attached);
       }
       else if(this.isVirus(auxX,auxY)){
-        this.virus--;
+        this.substractVirus(auxX,auxY);
       }
       this.getCell(auxX,auxY).destroyAnim();
       this.addScore(25);
     }
+    this.destroyFX();
+  }
+  this.substractVirus = function(auxX,auxY){
+    this.virus--;
+    if(this.getColor(auxX,auxY)=='yellow'){
+        this.yellowVirus--;
+    }
+    else if(this.getColor(auxX,auxY)=='blue'){
+        this.blueVirus--;
+      }
+    else if(this.getColor(auxX,auxY)=='red'){
+        this.redVirus--;
+      }
+  }
+  this.countColoredVirus = function(){//Método que cuenta los virus de cada color que hay en el tablero
+    for(var i=0;i<17;i++){
+      for(var j=0;j<8;j++){
+        if(this.getColor(j,i)=='yellow' && this.isVirus(j,i)){
+          this.yellowVirus++;
+        }
+        else if(this.getColor(j,i)=='blue' && this.isVirus(j,i)){
+          this.blueVirus++;
+        }
+        else if(this.getColor(j,i)=='red' && this.isVirus(j,i)){
+          this.redVirus++;
+        }
+      }
+    }
+
+  }
+  this.zeroYellowVirus = function(){
+    if(this.yellowVirus==0){
+      this.yellowVirus--;
+      return true;
+    }
+    else return false;
+  }
+  this.zeroBlueVirus = function(){
+    if(this.blueVirus==0){
+      this.blueVirus--;
+      return true;
+    }
+    else return false;
+  }
+  this.zeroRedVirus = function(){
+    if(this.redVirus==0){
+      this.redVirus--;
+      return true;
+    }
+    else return false;
   }
   this.getCell = function(x,y){
     return this.cells[y][x];

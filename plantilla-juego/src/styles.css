@@ -10,7 +10,21 @@ body {
   font-size: 1.6rem;
   background-color: black;
 }
+Button{
+    background:url(./images/Banner.png) no-repeat;
+    cursor:pointer;
+    border:none;
+    width:250px;
+    height:100px;
+}
 
+Button:active  /* use Dot here */
+{
+    background:url(./images/Banner2.png) no-repeat;
+}
+p{
+  color: white;
+}
 a {
   color: #c39;
 }
@@ -32,7 +46,7 @@ table, td, th {
 
   border: 1px solid white;
   color: white;
-  text-align: center;    
+  text-align: center;
 }
 table {
   width: 50%;

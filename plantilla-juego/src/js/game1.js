@@ -7,6 +7,9 @@ var Pill = item.Pill;
 var GameBoard = gameBoard.gameBoard;
 var Cell= gameBoard.cell;
 var GameScene1 = {};
+var moveFX;
+var rotationFX;
+
 
 GameScene1.preload = function(){
 
@@ -22,6 +25,8 @@ GameScene1.create = function(){
     this.glass;
     this.background;
     this.game;
+    moveFX = this.game.add.audio('misc1');
+    rotationFX = this.game.add.audio('misc3');
 
     this.maxY;//Altura máxima a la que puede aparecer un virus
 
@@ -33,6 +38,7 @@ GameScene1.create = function(){
     this.level;
     this.DrMariano;
     this.keyInput='';
+    this.DrMarianoShrug;
     this.DrMarianoBackground;
     this.scoreWindow1;
     this.scoreWindow2;
@@ -81,6 +87,12 @@ GameScene1.create = function(){
     this.mainLoop.timer.start();
 
   }
+  GameScene1.moveFX = function(){
+    moveFX.play();
+  }
+  GameScene1.rotationFX = function(){
+    rotationFX.play();
+  }
 GameScene1.update = function() {
     this.inputManager();
   }
@@ -90,6 +102,37 @@ GameScene1.update = function() {
     this.checkGameEnd();
     this.updateGUI();
   }
+GameScene1.redVirusDeath = function(){
+    this.redVirusAnim.loadTexture('redVirusDeath');
+    this.redVirusAnim.animations.add('die');
+    this.redVirusAnim.play('die',6,false);
+}
+GameScene1.blueVirusDeath = function(){
+    this.blueVirusAnim.loadTexture('blueVirusDeath');
+    this.blueVirusAnim.animations.add('die');
+    this.blueVirusAnim.play('die',6,false);
+}
+GameScene1.yellowVirusDeath = function(){
+    this.yellowVirusAnim.loadTexture('yellowVirusDeath');
+    this.yellowVirusAnim.animations.add('die');
+    this.yellowVirusAnim.play('die',6,false);
+}
+GameScene1.setVirusGUI = function(){
+  this.redVirusAnim=this.game.add.sprite(90,265,'redVirusAnim');
+  this.redVirusAnim.scale.setTo(0.7,0.7);
+  this.redVirusAnim.animations.add('idle');
+  this.redVirusAnim.play('idle',3,true);
+
+  this.blueVirusAnim=this.game.add.sprite(55,335,'blueVirusAnim');
+  this.blueVirusAnim.scale.setTo(0.7,0.7);
+  this.blueVirusAnim.animations.add('idle');
+  this.blueVirusAnim.play('idle',6,true);
+
+  this.yellowVirusAnim=this.game.add.sprite(135,335,'yellowVirusAnim');
+  this.yellowVirusAnim.scale.setTo(0.7,0.7);
+  this.yellowVirusAnim.animations.add('idle');
+  this.yellowVirusAnim.play('idle',6,true);
+}
 GameScene1.setGUI = function(){
     this.background = this.game.add.sprite(0,0, 'background1');
     this.glass = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, 'glass');
@@ -108,6 +151,8 @@ GameScene1.setGUI = function(){
     this.DrMarianoTitle = this.game.add.sprite(86,0,'DrMarianoTitle');
     this.pressEntertext = this.game.add.bitmapText(25,450,'pixel','PRESS ENTER',55);
     this.pressEntertext.visible =false;
+    this.lens = this.game.add.sprite(10,250, 'lens');
+    this.lens.scale.setTo(0.9,0.9);
 
     this.scoreWindow1 = this.game.add.sprite(410,250,'scoreWindow');
     this.levelText1 = this.game.add.bitmapText(430,280,'pixel','LEVEL',45);
@@ -117,9 +162,9 @@ GameScene1.setGUI = function(){
     this.virusText1 = this.game.add.bitmapText(430,400,'pixel','VIRUS',45);
     this.virusText2 = this.game.add.bitmapText(500,430,'pixel',this.board.virus,45);
 
-    this.scoreWindow2 = this.game.add.sprite(30,215,'scoreWindow2');
-    this.scoreText1 = this.game.add.bitmapText(55,240,'pixel','SCORE',45);
-    this.scoreText2 = this.game.add.bitmapText(55,265,'pixel',this.board.score,45);
+    this.scoreWindow2 = this.game.add.sprite(30,115,'scoreWindow2');
+    this.scoreText1 = this.game.add.bitmapText(55,140,'pixel','SCORE',45);
+    this.scoreText2 = this.game.add.bitmapText(55,165,'pixel',this.board.score,45);
 
     this.levelText1.tint = this.levelText2.tint = this.speedText1.tint = this.speedText2.tint = 0;
     this.virusText1.tint = this.virusText2.tint = this.scoreText1.tint = this.scoreText2.tint = 0;
@@ -127,6 +172,8 @@ GameScene1.setGUI = function(){
     this.nextPill2 = this.game.add.sprite(487,135,'');
     this.nextPill2.scale.setTo(-1,1);
     this.DrMariano = this.game.add.sprite(450, 150, 'DrMariano');
+    this.DrMarianoShrug = this.game.add.sprite(450, 150, 'DrMarianoShrug');
+    this.DrMarianoShrug.visible=false;
   }
 GameScene1.setSpeed = function(){
   if(options1.speed==0){
@@ -145,6 +192,15 @@ GameScene1.updateGUI = function(){
     this.advertText2.text = this.advertString2;
     this.nextPill1.loadTexture(this.currentPill.nextPill.color1 + 'Pill');
     this.nextPill2.loadTexture(this.currentPill.nextPill.color2 + 'Pill');
+    if(this.board.zeroYellowVirus()){
+      this.yellowVirusDeath();
+    }
+    if(this.board.zeroBlueVirus()){
+      this.blueVirusDeath();
+    }
+    if(this.board.zeroRedVirus()){
+      this.redVirusDeath();
+    }
   }
 GameScene1.checkGameEnd = function(){
   if(this.board.virus<=0){
@@ -156,6 +212,10 @@ GameScene1.checkGameEnd = function(){
   }
   else if(this.board.checkGameOver()){
     //level=0;
+    this.DrMariano.visible=false;
+    this.nextPill1.visible=false;
+    this.nextPill2.visible=false;
+    this.DrMarianoShrug.visible=true;
     this.advertString1='GAME';
     this.advertString2='OVER!';
     this.pauseGame();
@@ -194,9 +254,15 @@ GameScene1.quitAdvert = function(){
 }
 GameScene1.setLevel = function(){
   this.board.createBoard(this.level);
+  this.setVirusGUI();
   this.currentPill.startPill(3,1,'red','yellow');
 }
 GameScene1.inputManager = function(){
+    this.cursors.down.onDown.add(this.moveFX,this);
+    this.cursors.right.onDown.add(this.moveFX,this);
+    this.cursors.left.onDown.add(this.moveFX,this);
+    this.XKey.onDown.add(this.rotationFX,this);
+    this.ZKey.onDown.add(this.rotationFX,this);
     if(this.cursors.right.isDown && !this.board.pillBroken){
       if(this.cursors.right.duration<1){//Simula aumento de velocidad si se mantiene pulsado
         this.keyInput='r';

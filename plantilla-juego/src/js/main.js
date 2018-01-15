@@ -28,6 +28,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
     this.load.image('menuButton','images/menuButton.png');
     this.load.image('blue', 'images/blue.png');
+    this.load.image('lens', 'images/lens.png');
     this.load.image('yellow', 'images/yellow.png');
     this.load.image('red', 'images/red.png');
     this.load.image('bluePill', 'images/bluePill.png');
@@ -37,9 +38,21 @@ var PreloaderScene = {
     this.load.spritesheet('DrMariano', 'images/DrMariano.png',80,80,3);
     this.load.spritesheet('yellowVirus', 'images/yellowVirus.png',16,16,2);
     this.load.spritesheet('redVirus', 'images/redVirus.png',16,16,2);
+    this.load.spritesheet('redVirusAnim', 'images/redVirusAnim.png',80,80,2);
+    this.load.spritesheet('blueVirusAnim', 'images/blueVirusAnim.png',80,80,4);
+    this.load.spritesheet('yellowVirusAnim', 'images/yellowVirusAnim.png',80,80,4);
+    this.load.spritesheet('redVirusDeath', 'images/redVirusDeath.png',80,80,8);
+    this.load.spritesheet('blueVirusDeath', 'images/blueVirusDeath.png',80,80,8);
+    this.load.spritesheet('yellowVirusDeath', 'images/yellowVirusDeath.png',80,80,8);
     this.load.spritesheet('redExplosion', 'images/redExplosion.png',16,16,4);
     this.load.spritesheet('blueExplosion', 'images/blueExplosion.png',16,16,4);
     this.load.spritesheet('yellowExplosion', 'images/yellowExplosion.png',16,16,4);
+    this.load.spritesheet('DrMarianoFront', 'images/DrMarianoFront.png',82,80,2);
+    this.load.image('DrMarianoShrug', 'images/DrMarianoShrug.png');
+    this.load.audio('misc1','sound/misc1.mp3');
+    this.load.audio('misc2','sound/misc2.mp3');
+    this.load.audio('misc3','sound/misc3.mp3');
+    this.load.audio('misc4','sound/destroy.mp3');
     this.load.image('scoreWindow', 'images/scoreWindow.png');
     this.load.image('scoreWindow2', 'images/scoreWindow2.png');
     this.load.image('scoreFrame','images/scoreFrame.png');

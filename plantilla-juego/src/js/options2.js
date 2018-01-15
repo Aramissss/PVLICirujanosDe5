@@ -29,8 +29,9 @@ var wKey;
 var sKey;
 
 var OptionsScene2={};
-
+var sound2;
 OptionsScene2.create = function () {
+  sound2 = this.game.add.audio('misc2');
   this.option=1;//Variable que indica en qué opción está posado el icono
   this.speed1=0;
   this.level1=0;
@@ -74,6 +75,9 @@ OptionsScene2.create = function () {
 OptionsScene2.update = function () {
   inputManager();
 }
+function playFx(){
+  sound2.play();
+}
 function iconManager(){//Pone los iconos en su lugar
   if(OptionsScene2.option==1){
     optionSelec.y=100;
@@ -95,18 +99,21 @@ function iconManager(){//Pone los iconos en su lugar
 
 }
 function optionDown(){
+  playFx();
   OptionsScene2.option++;
   if(OptionsScene2.option>3){
     OptionsScene2.option=3;
   }
 }
 function optionUp(){
+  playFx();
   OptionsScene2.option--;
   if(OptionsScene2.option<1){
     OptionsScene2.option=1;
   }
 }
 function addOption1(){
+  playFx();
   if(OptionsScene2.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene2.level1++;
     if(OptionsScene2.level1>20){
@@ -127,6 +134,7 @@ function addOption1(){
   }
 }
 function substractOption1(){
+  playFx();
   if(OptionsScene2.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene2.level1--;
     if(OptionsScene2.level1<0){
@@ -147,6 +155,7 @@ function substractOption1(){
   }
 }
 function addOption2(){//Para el jugador 2
+  playFx();
   if(OptionsScene2.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene2.level2++;
     if(OptionsScene2.level2>20){
@@ -162,6 +171,7 @@ function addOption2(){//Para el jugador 2
 }
 
 function substractOption2(){// J2
+  playFx();
   if(OptionsScene2.option==1){//Cuando el selector está en la opción de nivel este aumenta
     OptionsScene2.level2--;
     if(OptionsScene2.level2<0){
