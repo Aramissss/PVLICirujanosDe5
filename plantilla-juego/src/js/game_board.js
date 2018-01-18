@@ -50,28 +50,33 @@ function gameBoard(Game,xOffset,yOffset){
     }
   }
   this.createVirus = function(number, maxY){//maxY es la altura maxima donde puede aparecer un virus
-    this.virus=number;
     this.yellowVirus=0;
     this.redVirus=0;
     this.blueVirus=0;
-    for(var i=0;i<number;i++){//Crea virus en posiciones aleatorias
+    this.virus=0;
+    for(this.virus=0;this.virus<number;this.virus++){//Crea virus en posiciones aleatorias
         var rndY=game.rnd.integerInRange(maxY, 16);
         var rndX=game.rnd.integerInRange(0, 7);
-        while(this.isVirus(rndX,rndY)){
+        var color=colors[game.rnd.integerInRange(0, 2)];
+      while(this.isVirus(rndX,rndY)){//Prueba posiciones distintas si hay un virus en la casilla
           rndY=game.rnd.integerInRange(maxY, 16);
           rndX=game.rnd.integerInRange(0, 7);
-        }
-        color=colors[game.rnd.integerInRange(0, 2)];
-        this.getCell(rndX,rndY).changeCell(color, 'Virus', 0,false);
-        if(color=='yellow'){
-          this.yellowVirus++;
-        }
-        else if(color=='blue'){
-          this.blueVirus++;
-        }
-        else if(color=='red'){
-          this.redVirus++;
-        }
+          color=colors[game.rnd.integerInRange(0, 2)];
+      }//Si no hay ya 3 virus adyacentes crea uno
+      this.getCell(rndX,rndY).changeCell(color, 'Virus', 0,false);
+      this.addVirus(color);
+      this.checkAdjacentVirus(color, rndX, rndY);//Comprueba si se han juntado 4 virus
+    }
+  }
+  this.addVirus = function(color){
+    if(color=='yellow'){
+      this.yellowVirus++;
+    }
+    else if(color=='blue'){
+      this.blueVirus++;
+    }
+    else if(color=='red'){
+      this.redVirus++;
     }
   }
   this.checkGameOver = function(){//Comprueba si hay alguna píldora obstruyendo la entrada
@@ -79,6 +84,17 @@ function gameBoard(Game,xOffset,yOffset){
       return true;
     }
     else return false;
+  }
+  this.checkAdjacentVirus = function(color, posX, posY){//Comprueba si hay colores 4 colores adyacentes
+    destroyablePills = [];//Este método se usa solo en la creación de virus para que no aparezcan 4 juntos
+    cont = 0;
+      if(this.checkHorizontal(color,posX,posY) || this.checkVertical(color,posX,posY)){
+        this.destroyAdjacentVirus();
+        destroyablePills = [];//Vacía el arrayHalfPills
+        cont = 0;
+        return true;
+      }
+      else false;
   }
   this.checkAdjacentColors = function(color, posX, posY){//Comprueba si hay colores 4 colores adyacentes
     destroyablePills = [];//Vacía el arrayHalfPills
@@ -147,8 +163,9 @@ function gameBoard(Game,xOffset,yOffset){
   }
   this.checkVertical = function(color, posX, posY){
     //Vertical
-    var auxX=posX;
     var auxY=posY;
+    var auxX=posX;
+//    var auxY=posY;
     while( this.sameColor(posX,auxY,color)){
       destroyablePills[cont]=[posX,auxY];//Almacena la posición
       auxY--;//La auxiliar recorre Y hacia arriba
@@ -193,6 +210,14 @@ function gameBoard(Game,xOffset,yOffset){
       this.addScore(25);
     }
     this.destroyFX();
+  }
+  this.destroyAdjacentVirus = function(){//Este método solo se usa para destruir virus en la creación del tablero
+    for(var i =0;i<cont;i++){
+      var auxX = destroyablePills[i][0];
+      var auxY = destroyablePills[i][1];
+      this.substractVirus(auxX,auxY);
+      this.getCell(auxX,auxY).destroyCell();//A diferencia del método anterior este no tiene animaciones
+    }
   }
   this.substractVirus = function(auxX,auxY){
     this.virus--;

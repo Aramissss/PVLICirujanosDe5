@@ -26,7 +26,7 @@ var PreloaderScene = {
     this.load.setPreloadSprite(this.loadingBar);
 
     // TODO: load here the assets for the game
-    this.load.image('menuButton','images/menuButton.png');
+
     this.load.image('blue', 'images/blue.png');
     this.load.image('lens', 'images/lens.png');
     this.load.image('yellow', 'images/yellow.png');
@@ -55,7 +55,7 @@ var PreloaderScene = {
     this.load.audio('misc4','sound/destroy.mp3');
     this.load.image('scoreWindow', 'images/scoreWindow.png');
     this.load.image('scoreWindow2', 'images/scoreWindow2.png');
-    this.load.image('scoreFrame','images/scoreFrame.png');
+    this.load.image('scoreFrame','images/ScoreFrame.png');
     this.load.image('crown','images/Crown.png');
     this.load.image('levelFrame', 'images/levelFrame.png');
     this.load.image('DrMarianoTitle','images/DrMarianoTitle.png');
@@ -66,7 +66,6 @@ var PreloaderScene = {
     this.load.image('background3', 'images/background3.png');
     this.load.image('heartIcon', 'images/heartIcon.png');
     this.load.image('playerSelection', 'images/playerSelection.png');
-    this.load.image('heartIcon', 'images/heartIcon.png');
     this.load.image('arrowIcon', 'images/arrowIcon.png');
     this.load.image('optionsWindow', 'images/optionsWindow.png');
     this.load.image('levelMeter', 'images/levelMeter.png');
