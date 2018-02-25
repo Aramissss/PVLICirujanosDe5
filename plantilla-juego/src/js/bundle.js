@@ -26,9 +26,16 @@ GameScene1.create = function(){
     this.glass;
     this.background;
     this.game;
-    moveFX = this.game.add.audio('misc1');
-    rotationFX = this.game.add.audio('misc3');
 
+    if(options1.music==0){
+      this.music=1;
+    }
+    else this.music=0;
+
+    moveFX = this.game.add.audio('misc1',0.3*this.music);
+    rotationFX = this.game.add.audio('misc3',0.3*this.music);
+    this.mainTheme = this.game.add.audio('mainTheme', this.music);
+    this.mainTheme.loopFull();
     this.maxY;//Altura máxima a la que puede aparecer un virus
 
     this.lowSpeed=500;
@@ -72,7 +79,7 @@ GameScene1.create = function(){
     this.level = options1.level;
     this.setSpeed();
     this.game=this.game;
-    this.board = new GameBoard(this.game,244,138);
+    this.board = new GameBoard(this.game,244,138, this.music);
     this.setGUI();
 
     this.enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
@@ -219,6 +226,7 @@ GameScene1.checkGameEnd = function(){
     this.DrMarianoShrug.visible=true;
     this.advertString1='GAME';
     this.advertString2='OVER!';
+    this.mainTheme.stop();
     this.pauseGame();
   }
 }
@@ -433,9 +441,14 @@ GameScene2.create = function(){
     this.level2 = options2.level2;
     this.setSpeedString();
     this.game=this.game;
-    moveFX = this.game.add.audio('misc1');
-    rotationFX = this.game.add.audio('misc3');
-
+    if(options2.music==0){
+      this.music=1;
+    }
+    else this.music=0;
+    moveFX = this.game.add.audio('misc1',0.3*this.music);
+    rotationFX = this.game.add.audio('misc3',0.3*this.music);
+    this.mainTheme = this.game.add.audio('mainTheme',this.music);
+    this.mainTheme.loopFull();
     this.enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.dKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
@@ -447,9 +460,9 @@ GameScene2.create = function(){
     this.bKey = this.game.input.keyboard.addKey(Phaser.Keyboard.B);
     this.cursors = this.game.input.keyboard.createCursorKeys();//Asigna los cursores
 
-    this.board1 = new GameBoard(this.game,74,165);
+    this.board1 = new GameBoard(this.game,74,165, this.music);
 
-    this.board2 = new GameBoard(this.game,424,165);
+    this.board2 = new GameBoard(this.game,424,165, this.music);
 
     this.setGUI();
 
@@ -549,6 +562,7 @@ GameScene2.endGame = function(){
       this.advertString1='Loser';
       this.advertString2='Winner';
     }
+    this.mainTheme.stop();
     this.advertText1.text = this.advertString1;
     this.advertText2.text = this.advertString2;
     this.advertText1.visible = this.advertText2.visible = this.pressEntertext.visible =true;
@@ -784,10 +798,10 @@ var destroyablePills = [];//Array con las posiciones de las píldoras a destruir
 var cont=0;//Contador del array
 var color;
 var destroySound;
-function gameBoard(Game,xOffset,yOffset){
+function gameBoard(Game,xOffset,yOffset, volume=1){
 
   game =Game;
-  destroySound = game.add.audio('misc4');
+  destroySound = game.add.audio('misc4',0.3*volume);
   this.pillBroken=false;
   this.xOffset = xOffset;
   this.yOffset = yOffset;
@@ -1494,6 +1508,7 @@ var PreloaderScene = {
     this.load.audio('misc2','sound/misc2.mp3');
     this.load.audio('misc3','sound/misc3.mp3');
     this.load.audio('misc4','sound/destroy.mp3');
+    this.load.audio('mainTheme', 'sound/DJ_DELEY.mp3');
     this.load.image('scoreWindow', 'images/scoreWindow.png');
     this.load.image('scoreWindow2', 'images/scoreWindow2.png');
     this.load.image('scoreFrame','images/ScoreFrame.png');
@@ -1643,7 +1658,7 @@ var sound2;
 var OptionsScene1={};
 
 OptionsScene1.create = function () {
-  sound2 = this.game.add.audio('misc2');
+  sound2 = this.game.add.audio('misc2',0.3);
   this.option=1;//Variable que indica en qué opción está posado el icono
   this.speed=0;
   this.music=0;
